@@ -1,0 +1,58 @@
+#include "pampac.h"
+/**********************************************************************/
+/* This function traverses to the leaves of the tree and computes     */
+/* predictor steps used to seed corrector iterations on other         */
+/* processors. Nodes generated may exceed # of processes available.   */
+/**********************************************************************/
+void
+construct_predictor_nodes (PTnode *alpha, options_struct *opts)
+{
+  int k;
+  bool is_max_depth, is_leaf_node, is_black, has_data;
+  PTnode* beta;
+  /* Predictor steps are constructed only when:
+     - the node alpha is not BLACK
+     - the node alpha's depth is below prescribed maximum
+     - the node alpha is a leaf node
+   */
+
+  is_black = (alpha->color==BLACK);
+  is_max_depth = (alpha->depth >= opts->max_depth - 1);
+  if (is_max_depth || is_black)
+    return;
+  is_leaf_node = (count_children (alpha) == 0);
+  if (is_leaf_node)
+    {
+      /* Allocate memory for nodes for predictor steps & initialise. */
+      for (k = 0; k < alpha->max_children; k++)
+	{
+	  has_data = (alpha->T_parent!=NULL) && (alpha->z!=NULL) &&
+                     (alpha->z_parent!=NULL);
+	  double new_step = opts->scale_process[k] * (alpha->h);
+	  bool is_too_long = (new_step > opts->h_max);
+
+	  if ((alpha->child[k]==NULL) && has_data && !(is_too_long))
+	    {
+	      /* Allocate node and fill in scalar fields; assign actual
+		 process ID before allocating array fields of beta. */
+	      beta = init_PTnode (alpha->max_children);
+	      beta->N_dim = alpha->N_dim;
+	      beta->h = new_step;
+	      beta->nu = 0;
+	      beta->nu_parent = alpha->nu;
+	      beta->depth = alpha->depth + 1;
+	      alpha->child[k] = beta;
+	    }
+	}
+    }
+  else
+    {
+      /* Loop over children, recursively descending to leaves. */
+      for (k = 0; k < alpha->max_children; k++)
+	{
+	  if (alpha->child[k] != NULL)
+	    construct_predictor_nodes (alpha->child[k], opts);
+	}
+    }
+  return;
+}

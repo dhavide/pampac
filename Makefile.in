@@ -1,0 +1,60 @@
+################################################################################
+# Macro definitions: change as appropriate for your system
+################################################################################
+
+################################################################################
+# 1. Paths for "includes" (i.g., headers) and libraries
+################################################################################
+
+# Important: PAMPACDIR must be set appropriately for user's directory system
+# LIBPATHS: appropriate paths for libraries (if necessary)
+# INCPATHS: appropriate directories for header files (if necessary)
+
+PAMPACDIR = /home/dhavide/work/pampac/pampac-0.9/src
+LIBPATHS = -L/usr/lib/atlas-base -L${PAMPACDIR}
+INCPATHS = -iquote ${PAMPACDIR}
+LIBNAME = libpampac.a
+################################################################################
+# 2. Executables, compilers (with default flags and compilation rules)
+################################################################################
+
+MAKE    = /usr/bin/make
+MPIF90 = /usr/bin/mpif90
+MPIF77 = /usr/bin/mpif77
+MPICC   = /usr/bin/mpicc
+MPIEXEC = /usr/bin/mpiexec.mpich2
+CFLAGS     = -std=c99 -g -Wall
+
+# For gcc and related C compilers, "MFLAG = -MM" is appropriate;
+# for other C compilers "MFLAG = -M" may be required.
+# This flag extracts header file dependencies from .c files to
+# generate dependency rules in .d files for Makefiles automatically
+# (thereby relieving the burden on programmers to do so)
+
+MFLAG      = -MM
+
+# Rules to generate & store dependency information for ${foo}.c in ${foo}.d
+-include $(OBJS:.o=.d)
+.SUFFIXES: .o .f90 .f .c 
+.c.o:
+	${MPICC} ${INCPATHS} ${CFLAGS} -c $<
+	${MPICC} ${INCPATHS} ${MFLAG} $(CFLAGS) $< > $*.d
+
+.f90.o:
+	${MPIF90} ${INC} ${FFLAGS} -c $<
+.f.o:
+	${MPIF77} ${INC} ${FFLAGS} -c $<
+
+################################################################################
+# 3. Libraries
+################################################################################
+
+# Change the Atlas/LAPACK/BLAS libraries (and paths) as appropriate for your
+# system.
+
+MATH       = -lm
+LAPACK     = -llapack_atlas
+BLAS       = -lcblas
+PAMPAC     = -lpampac
+LIBS       = ${PAMPAC} ${BLAS} ${LAPACK} ${MATH}
+
