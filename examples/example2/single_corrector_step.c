@@ -39,7 +39,7 @@ single_corrector_step (int N_real, double *Z, double *T)
 /*   ...                                                                      */
 /* Z[2*N_grid-2] = Re(X[N_grid-1]) <- (N_grid-1)st Fourier coefficient        */
 /* Z[2*N_grid-1] = Im(X[N_grid-1]) <- (N_grid-1)st Fourier coefficient        */
-/* Z[2*N_grid)   = Re(c)   <- wavespeed                                       */
+/* Z[2*N_grid]   = Re(c)   <- wavespeed                                       */
 /* Z[2*N_grid+1] = Im(c)   <- wavespeed                                       */
 /* Z[2*N_grid+2] = Re(nu)  <- viscosity                                       */
 /* Z[2*N_grid+3] = Im(nu)  <- viscosity                                       */

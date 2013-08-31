@@ -74,15 +74,16 @@ compute_residual (int N_real, double *Z, double *Res)
 /*   ...                                                                      */
 /* Z[2*N_grid-2] = Re(X[N_grid-1]) <- (N_grid-1)st Fourier coefficient        */
 /* Z[2*N_grid-1] = Im(X[N_grid-1]) <- (N_grid-1)st Fourier coefficient        */
-/* Z[2*N_grid)   = Re(c)   <- wavespeed                                       */
+/* Z[2*N_grid]   = Re(c)   <- wavespeed                                       */
 /* Z[2*N_grid+1] = Im(c)   <- wavespeed                                       */
 /* Z[2*N_grid+2] = Re(nu)  <- viscosity                                       */
 /* Z[2*N_grid+3] = Im(nu)  <- viscosity                                       */
 /*                                                                            */
 /* The computed vector field is returned in the array of doubles Res that has */
-/* 2*N_{grid} components. The array Res also uses a compressed complex        */
+/* 2*N_{grid}+3 components. The array Res also uses a compressed complex      */
 /* storage scheme (i.e., alternating real and imaginary parts) to represent   */
-/* a complex vector using an array of doubles.                                */
+/* a complex vector using an array of doubles. The last three components of   */
+/* are set to zero.                                                           */
 /*                                                                            */
 /* Passing NULL pointers for either Res or Z signals to set up or clean up    */
 /* static data structures used internally.                                    */
@@ -197,6 +198,9 @@ compute_residual (int N_real, double *Z, double *Res)
       Res[2*k] = creal (Res_cplx[k]);
       Res[2*k + 1] = cimag (Res_cplx[k]);
     }
+  Res[N_real-4] = 0.0;
+  Res[N_real-3] = 0.0;
+  Res[N_real-2] = 0.0;
   return;
 }
 /******************************************************************************/

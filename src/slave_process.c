@@ -32,7 +32,7 @@ slave_process (int N_dim)
 
       single_corrector_step (N_dim, z, T);
       compute_residual (N_dim, z, T);	/* residual vector stored in T */
-      res_norm = cblas_dnrm2 (N_dim, T, 1);
+      res_norm = cblas_dnrm2 (N_dim-1, T, 1);
       /* Corresponding MPI_Recv calls in assess_residuals */
       MPI_Send (z, N_dim, MPI_DOUBLE, master, CONTINUE_TAG, MPI_COMM_WORLD);
       MPI_Send (&res_norm, 1, MPI_DOUBLE, master, CONTINUE_TAG, MPI_COMM_WORLD);
