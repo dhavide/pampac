@@ -13,6 +13,14 @@ master_process (int p_id, int N_p, options_struct * opts)
   int lambda_index, tree_file_count, global_iter, max_global_iter;
   bool has_failed, has_completed;
   PTnode *root = NULL;
+  if (opts->max_depth<=1)
+    {
+      printf ("Require max_depth > 1; max_depth = %d\n", opts->max_depth);
+      printf ("Terminating...\n");
+      stop_slaves(N_p);
+      return;
+    }
+
   initialize_root_node (&root, opts);
   lambda_min = opts->lambda_min;
   lambda_max = opts->lambda_max;
