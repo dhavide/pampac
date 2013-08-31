@@ -69,7 +69,7 @@ choose_viable_paths (PTnode *alpha)
 	     viable path and it is *not* the best path. */
 	  if (beta!=NULL) 
 	    {
-	      is_viable = (beta->viable_path_length>=0.0);
+	      bool is_viable = (beta->viable_path_length>=0.0);
 	      if (is_viable && k!=best_path_index)
 		{
 		  delete_tree (alpha->child[k]);
