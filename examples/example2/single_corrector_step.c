@@ -188,11 +188,11 @@ single_corrector_step (int N_real, double *Z, double *T)
   for (k=0;k<=N_grid-1;k++)
     for (ell=0;ell<=k;ell++)
       Jac_cplx[k+(N_grid+2)*ell] += X_cplx[k-ell] / N_grid;
-		
+
   for (k=0;k<=N_grid-2;k++)
     for (ell=k+1;ell<=N_grid-1;ell++)
       Jac_cplx[k+(N_grid+2)*ell] += X_cplx[k-ell+N_grid] / N_grid;
-  
+
   /* Compute the right-hand side and pack into a complex vector */
   compute_residual ( N_real, Z, Res );
   for (k=0;k<N_grid;k++)
@@ -204,7 +204,21 @@ single_corrector_step (int N_real, double *Z, double *T)
   info = clapack_zgesv( CblasColMajor, N_grid+2, 1, Jac_cplx, N_grid+2, 
 			ipiv, RHS_cplx, N_grid+2);
   if (info  != 0) fprintf(stderr,"failure with error %d\n", info);
-  
+
+  /* Filter out the part of the Newton update that 
+     gives complex-valued solutions or parameters
+     due to accumulated numerical noise */
+  RHS_cplx[0] = creal(RHS_cplx[0]);
+  RHS_cplx[N_grid/2] = creal(RHS_cplx[N_grid/2]);
+  RHS_cplx[N_grid] = creal(RHS_cplx[N_grid]);
+  RHS_cplx[N_grid+1] = creal(RHS_cplx[N_grid+1]);
+  for (k=1;k<N_grid/2;k++)
+   {
+     RHS_cplx[k] = 0.5*(RHS_cplx[k]+conj(RHS_cplx[N_grid-k]));
+     RHS_cplx[N_grid-k] = conj(RHS_cplx[k]);
+   };
+
+
   /* Overwrite array Z using corrector step in; unwrap real & imaginary parts
      (notice minus sign) */
   for (k=0;k<N_grid+2;k++)

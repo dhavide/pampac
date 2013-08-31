@@ -26,3 +26,4 @@ KSmain: $(OBJS)
 
 clean:
 	/bin/rm -f *~ *.o *.d KSmain output.txt
+	cd tree-data; make clean
