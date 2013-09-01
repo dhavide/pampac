@@ -9,8 +9,8 @@
 @param H_MAX 1.0e+04
 @param H_INIT 1.0e+02
 
-@param MAX_ITER 5
-@param TOL_RESIDUAL 5.0e-5
+@param MAX_ITER 4
+@param TOL_RESIDUAL 5.0e-7
 @param MU 1.1
 @param GAMMA 1.5
 

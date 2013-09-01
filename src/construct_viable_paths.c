@@ -15,28 +15,26 @@ construct_viable_paths (PTnode *alpha)
   is_leaf = (count_children(alpha)==0);
   is_valid = (alpha->color==GREEN);
   is_viable = is_valid || (alpha->color==YELLOW);
-  /* Default fields to NaN/-1; algorithm overwrites as necessary. */
+  /* Default values NaN/-1; algorithm overwrites as necessary. */
   alpha->valid_path_length = NAN;
   alpha->valid_index = -1;
   alpha->nu_valid = -1;
   alpha->viable_path_length = NAN;
   alpha->viable_index = -1;
   alpha->nu_viable = -1;
+
+  if (is_valid) {
+    alpha->valid_path_length = 0;
+    alpha->nu_valid = alpha->nu;
+  } /* In case alpha is the end of a valid path and
+       is not a leaf node. */
+  if (is_viable) {
+    alpha->viable_path_length = 0;
+    alpha->nu_viable = alpha->nu;
+  } /* In case alpha is the end of a viable path and is not a leaf node. */
+
   /* Leaf nodes: Zero path lengths as appropriate. */
-  if (is_leaf)
-    {
-      if (is_viable)
-	{
-	  alpha->viable_path_length = 0.0;
-	  alpha->nu_viable = alpha->nu;
-	}
-      if (is_valid)
-	{
-	  alpha->valid_path_length = 0.0;
-	  alpha->nu_valid = alpha->nu;
-	}
-    }
-  else
+  if (!is_leaf)
     {
       /* For non-leaf nodes, first recurse to leaf nodes, updating
 	 path lengths en route. Second, for each valid/viable child,
