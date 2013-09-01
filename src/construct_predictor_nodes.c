@@ -44,6 +44,7 @@ construct_predictor_nodes (PTnode *alpha, options_struct *opts)
 		 process ID before allocating array fields of beta. */
 	      beta = init_PTnode (alpha->max_children);
 	      beta->N_dim = alpha->N_dim;
+	      beta->h_init = new_step;
 	      beta->h = new_step;
 	      beta->nu = 0;
 	      beta->nu_parent = alpha->nu;

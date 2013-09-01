@@ -51,7 +51,7 @@ construct_viable_paths (PTnode *alpha)
 		                (beta->color==YELLOW);
 	      if (is_viable && is_child_viable)
 		{
-		  length = beta->viable_path_length + beta->h;
+		  length = beta->viable_path_length + beta->h_init;
 		  /* Test below fails if either side is NaN. */
 		  if (viable_path_length < length)
 		    {
@@ -61,7 +61,7 @@ construct_viable_paths (PTnode *alpha)
 		}
 	      if (is_valid && is_child_valid)
 		{
-		  length = beta->valid_path_length + beta->h;
+		  length = beta->valid_path_length + beta->h_init;
 		  /* Test below fails if either side is NaN. */
 		  if (valid_path_length < length)
 		    {

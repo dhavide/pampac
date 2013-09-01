@@ -64,6 +64,7 @@ typedef struct PTnode
   int nu_parent;
   int nu_valid;
   int nu_viable;
+  double h_init;
   double h;
   double res_norm;
   double *z;

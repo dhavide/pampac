@@ -17,6 +17,7 @@ print_PTnode (PTnode *alpha)
   printf ("nu_parent = %d\n", alpha->nu_parent);
   printf ("nu_valid = %d\n", alpha->nu_valid);
   printf ("nu_viable = %d\n", alpha->nu_viable);
+  printf ("h_init = %g\n", alpha->h_init);
   printf ("h = %g\n", alpha->h);
   printf ("res_norm = %g\n", alpha->res_norm);
   printf ("valid_path_length = %g\n", alpha->valid_path_length);
