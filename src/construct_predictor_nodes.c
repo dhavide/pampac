@@ -23,6 +23,7 @@ construct_predictor_nodes (PTnode *alpha, options_struct *opts)
   is_leaf_node = (count_children (alpha) == 0);
   if (is_leaf_node)
     {
+      bool has_exceeded_max_step = false;
       /* Allocate memory for nodes for predictor steps & initialise. */
       for (k = 0; k < alpha->max_children; k++)
 	{
@@ -30,9 +31,15 @@ construct_predictor_nodes (PTnode *alpha, options_struct *opts)
                      (alpha->z_parent!=NULL);
 	  double new_step = opts->scale_process[k] * (alpha->h);
 	  bool is_too_long = (new_step > opts->h_max);
-
-	  if ((alpha->child[k]==NULL) && has_data && !(is_too_long))
+	  /* Create at most one prediction with max step size. */
+	  if ( (alpha->child[k]==NULL) && has_data && 
+	      !((has_exceeded_max_step) && (is_too_long)) )
 	    {
+	      if (is_too_long)
+		{
+		  new_step = opts->h_max;
+		  has_exceeded_max_step = true;
+		}
 	      /* Allocate node and fill in scalar fields; assign actual
 		 process ID before allocating array fields of beta. */
 	      beta = init_PTnode (alpha->max_children);
