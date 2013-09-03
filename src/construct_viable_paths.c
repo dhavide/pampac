@@ -24,12 +24,12 @@ construct_viable_paths (PTnode *alpha)
   alpha->nu_viable = -1;
 
   if (is_valid) {
-    alpha->valid_path_length = 0;
+    alpha->valid_path_length = alpha->h_init;
     alpha->nu_valid = alpha->nu;
   } /* In case alpha is the end of a valid path and
        is not a leaf node. */
   if (is_viable) {
-    alpha->viable_path_length = 0;
+    alpha->viable_path_length = alpha->h_init;
     alpha->nu_viable = alpha->nu;
   } /* In case alpha is the end of a viable path and is not a leaf node. */
 
@@ -51,7 +51,7 @@ construct_viable_paths (PTnode *alpha)
 		                (beta->color==YELLOW);
 	      if (is_viable && is_child_viable)
 		{
-		  length = beta->viable_path_length + beta->h_init;
+		  length = beta->viable_path_length + alpha->h_init;
 		  /* Test below fails if either side is NaN. */
 		  if (viable_path_length < length)
 		    {
@@ -61,7 +61,7 @@ construct_viable_paths (PTnode *alpha)
 		}
 	      if (is_valid && is_child_valid)
 		{
-		  length = beta->valid_path_length + beta->h_init;
+		  length = beta->valid_path_length + alpha->h_init;
 		  /* Test below fails if either side is NaN. */
 		  if (valid_path_length < length)
 		    {

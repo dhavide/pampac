@@ -10,7 +10,7 @@
 # LIBPATHS: appropriate paths for libraries (if necessary)
 # INCPATHS: appropriate directories for header files (if necessary)
 
-PAMPACDIR = /home/dhavide/pampac-0.9/src
+PAMPACDIR = /home/dhavide/pampac/src
 LIBPATHS = -L/usr/lib/atlas-base -L${PAMPACDIR}
 INCPATHS = -iquote ${PAMPACDIR}
 LIBNAME = libpampac.a
