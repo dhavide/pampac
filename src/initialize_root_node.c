@@ -20,14 +20,14 @@ void initialize_root_node (PTnode** root_addr, options_struct *opts)
   for (k=0; k<N_dim; k++)
     root->z_parent[k] = root->z[k];
 
-  root->z_parent[opts->lambda_index] -= opts->delta_lambda;
+  root->z_parent[opts->lambda_index] -= (opts->lambda_dir)*(opts->delta_lambda);
   /* To find another point on the continuation curve, search along the */
   /* drection of a unit vector with all zeros except (-1.0) in the     */
   /* component of lambda_index (index of continuation parameter).      */
   for (k = 0; k < N_dim - 1; k++)
     root->T_parent[k] = 0.e0;
   /* Secant is elementary unit vector in reverse direction. */
-  root->T_parent[opts->lambda_index] = (opts->lambda_dir)*(-1.0);
+  root->T_parent[opts->lambda_index] = 1.0;
 
   bool has_converged=false, has_failed=false;
   int count = 0;

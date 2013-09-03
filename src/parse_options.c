@@ -38,9 +38,6 @@ parse_options (char *file_name)
 	  /* Expect integer in range [0,N_dim-1] */
 	  if (strcmp (param_name, "LAMBDA_INDEX") == 0)
 	    opts.lambda_index = atoi (param_value);
-	  /* Expect +1 or -1 (direction of initial step along curve) */
-	  if (strcmp (param_name, "LAMBDA_DIR") == 0)
-	    opts.lambda_dir = atoi (param_value);
 	  /* Expect (small) positive real value */
 	  if (strcmp (param_name, "DELTA_LAMBDA") == 0)
 	    opts.delta_lambda = atof (param_value);
@@ -98,6 +95,13 @@ parse_options (char *file_name)
 	    }
 	}
     }
+
+  /* Set opts.lambda_dir using opts.h_init */
+  /* yields +1 or -1 (direction of initial step along curve) */
+  double h = opts.h_init;
+  opts.lambda_dir = (h > 0) ? +1.0 : -1.0;
+  opts.h_init = abs(h);
+
   fclose (param_file);
   return opts;
 }

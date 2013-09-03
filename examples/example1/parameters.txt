@@ -2,7 +2,6 @@
 @param LAMBDA_MIN 0.0035
 @param LAMBDA_MAX 1
 @param LAMBDA_INDEX 6368
-@param LAMBDA_DIR +1
 @param DELTA_LAMBDA 1.0e-4
 
 @param H_MIN 1e-16
