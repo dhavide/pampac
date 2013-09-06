@@ -80,7 +80,7 @@ single_corrector_step (int N_real, double *Z, double *T)
 	  D2 = fftw_alloc_real (N_grid);
 	  D4 = fftw_alloc_real (N_grid);
 	  X_cplx = fftw_alloc_complex (N_grid);
-	  Res = fftw_alloc_real (2*N_grid);
+	  Res = fftw_alloc_real (2*N_grid+3);
 	  RHS_cplx = fftw_alloc_complex (N_grid+2);
 	  Jac_cplx = fftw_alloc_complex (pow(N_grid+2,2));
 	  ipiv = malloc((N_grid+2)*sizeof(*ipiv));
@@ -96,8 +96,6 @@ single_corrector_step (int N_real, double *Z, double *T)
 	  return;
 	}
       /* Cleaning up static arrays and data structures */
-      fftw_destroy_plan (plan_fft);
-      fftw_destroy_plan (plan_ifft);
       fftw_free (D);
       D = NULL;
       fftw_free (D2);
@@ -114,6 +112,8 @@ single_corrector_step (int N_real, double *Z, double *T)
       RHS_cplx = NULL;
       free (ipiv);
       ipiv = NULL;
+      fftw_destroy_plan (plan_fft);
+      fftw_destroy_plan (plan_ifft);
       /* Reset static flag for future calls to single_corrector_step */
       setup_complete = false;
 
