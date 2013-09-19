@@ -10,13 +10,13 @@ include ${TOPLEVEL}/Makefile.in  # Parse Makefile.in for generic macros
 ################################################################################
 all:
 	${MAKE} lib
-	${MAKE} example3
+	${MAKE} examples
 
 lib:
 	cd src; ${MAKE} lib
 
-example3:
-	cd examples/example3; ${MAKE} KSmain
+examples:
+	cd examples; ${MAKE} all
 
 clean:
 	rm -f *~
@@ -25,5 +25,5 @@ clean:
 
 remake:
 	${MAKE} clean
-	${MAKE} all   # NB: make all not done yet...
+	${MAKE} all
 ################################################################################
