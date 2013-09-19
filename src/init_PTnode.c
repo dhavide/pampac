@@ -23,7 +23,7 @@ init_PTnode ( int max_children)
   alpha->pid = MPI_PROC_NULL;
   alpha->color = RED;
   alpha->nu = -1;
-  alpha->nu_parent = -1;
+  alpha->nu_init = -1;
   alpha->nu_valid = -1;
   alpha->nu_viable = -1;
   alpha->h = NAN;
@@ -35,8 +35,8 @@ init_PTnode ( int max_children)
   alpha->depth = -1;
   /* Initialise all pointers to NULL */
   alpha->z = NULL;
-  alpha->T_parent = NULL;
-  alpha->z_parent = NULL;
+  alpha->T_init = NULL;
+  alpha->z_init = NULL;
   alpha->max_children = max_children;
   alpha->child = NULL;
   alpha->child = malloc (max_children * sizeof(PTnode*));

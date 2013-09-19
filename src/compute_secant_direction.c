@@ -10,8 +10,8 @@ compute_secant_direction (PTnode *alpha)
   double *z, *z_old, *delta_z, delta_z_norm;
   N = alpha->N_dim;
   z = alpha->z;
-  z_old = alpha->z_parent;
-  delta_z = alpha->T_parent;
+  z_old = alpha->z_init;
+  delta_z = alpha->T_init;
   for (k = 0; k < N; k++)
     delta_z[k] = z[k] - z_old[k];
   delta_z_norm = cblas_dnrm2 (N, delta_z, 1); /* BLAS routine for 2-norm */

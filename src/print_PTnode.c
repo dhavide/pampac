@@ -14,7 +14,7 @@ print_PTnode (PTnode *alpha)
   print_color (alpha,stdout);
   printf("\n");
   printf ("nu = %d\n", alpha->nu);
-  printf ("nu_parent = %d\n", alpha->nu_parent);
+  printf ("nu_init = %d\n", alpha->nu_init);
   printf ("nu_valid = %d\n", alpha->nu_valid);
   printf ("nu_viable = %d\n", alpha->nu_viable);
   printf ("h_init = %g\n", alpha->h_init);
@@ -38,25 +38,25 @@ print_PTnode (PTnode *alpha)
 	printf("... )\n");
       }
        
-  if (alpha->z_parent==NULL)
-    printf("alpha->z_parent=%p\n",alpha->z);
+  if (alpha->z_init==NULL)
+    printf("alpha->z_init=%p\n",alpha->z);
   else
     if (alpha->N_dim>=nt)
       {
-	printf("z_parent = (");
+	printf("z_init = (");
 	for (k=0; k<nt; k++)
-	  printf(" %10.3e,", alpha->z_parent[k]);
+	  printf(" %10.3e,", alpha->z_init[k]);
 	printf("... )\n");
       }
 
-  if (alpha->T_parent==NULL)
-    printf("alpha->T_parent=%p\n",alpha->z);
+  if (alpha->T_init==NULL)
+    printf("alpha->T_init=%p\n",alpha->z);
   else
     if (alpha->N_dim>=nt)
       {
-	printf("T_parent = (");
+	printf("T_init = (");
 	for (k=0; k<nt; k++)
-	  printf(" %10.3e,", alpha->T_parent[k]);
+	  printf(" %10.3e,", alpha->T_init[k]);
 	printf("... )\n");
       }
 }

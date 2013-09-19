@@ -80,14 +80,14 @@ construct_viable_paths (PTnode *alpha)
       alpha->viable_path_length = viable_path_length;
       alpha->viable_index = viable_index;
       beta = alpha->child[viable_index];
-      alpha->nu_viable = max(alpha->nu, beta->nu_parent + beta->nu_viable);
+      alpha->nu_viable = max(alpha->nu, beta->nu_init + beta->nu_viable);
     }
   if (valid_path_length>0.0)
     {
       alpha->valid_path_length = valid_path_length;
       alpha->valid_index = valid_index;
       beta = alpha->child[valid_index];
-      alpha->nu_valid = max(alpha->nu, beta->nu_parent + beta->nu_valid);
+      alpha->nu_valid = max(alpha->nu, beta->nu_init + beta->nu_valid);
     }
   return;
 }

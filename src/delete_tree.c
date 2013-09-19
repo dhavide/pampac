@@ -25,11 +25,11 @@ delete_tree (PTnode *alpha)
       free (alpha->z);
       alpha->z = NULL;
     }
-  alpha->z_parent = NULL; /* Don't free z_parent (shallow copy). */
-  if (alpha->T_parent!=NULL)
+  alpha->z_init = NULL; /* Don't free z_init (shallow copy). */
+  if (alpha->T_init!=NULL)
     {
-      free (alpha->T_parent);
-      alpha->T_parent = NULL;
+      free (alpha->T_init);
+      alpha->T_init = NULL;
     }
   free (alpha);
   alpha = NULL;

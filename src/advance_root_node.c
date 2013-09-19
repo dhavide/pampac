@@ -23,8 +23,8 @@ advance_root_node (PTnode ** root, options_struct * opts)
       write_root_coordinates (tmp_node, opts);
       tmp_node = tmp_node->child[k];
       (*root)->child[k] = NULL;
-      free ((*root)->z_parent); (*root)->z_parent = NULL;
-      free ((*root)->T_parent); (*root)->T_parent = NULL;
+      free ((*root)->z_init); (*root)->z_init = NULL;
+      free ((*root)->T_init); (*root)->T_init = NULL;
       free ((*root)->child);    (*root)->child = NULL;
       *root = tmp_node;
       if (opts->verbose>0)

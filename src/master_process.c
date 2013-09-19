@@ -80,8 +80,8 @@ master_process (int p_id, int N_p, options_struct * opts)
     }
   write_root_coordinates (root, opts);
   stop_slaves(N_p);
-  free (root->z_parent);
-  root->z_parent = NULL;
+  free (root->z_init);
+  root->z_init = NULL;
   delete_tree (root);
   root = NULL;
   return;
