@@ -1,0 +1,4 @@
+INSTALL:
+
+The file Makefile.in contains the principal macros that need to be defined to build the PAMPAC library. Users should customise macros in Makefile.in to suit their own system (notably PAMPACDIR should be the directory where the library will be installed).
+

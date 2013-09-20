@@ -1,0 +1,5 @@
+PAMPAC: a Parallel Adaptive Method for Pseudo-Arclength Continuation
+
+AUTHORS: Dhavide Aruliah, Lennaert van Veen, Alex Dubitski
+
+PAMPAC is a library intended to help convert a serial continuation code to take advantage of available parallel hardware.
