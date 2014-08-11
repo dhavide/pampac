@@ -1,23 +1,10 @@
 #include <gsl/gsl_cblas.h>
 #include "pampac.h"
-void initialize_root_node (PTnode** root_addr, options_struct *opts)
+void initialize_root_node (PTnode* root, options_struct *opts)
 {
-  PTnode *root;
   int k, N_dim = opts->N_dim;
-  if (opts->verbose>0)
-    printf("initialize_root_node: setting fields of root node.\n");
-  /* Fill in fields of root node z appropriately */
-  root = init_PTnode (opts->max_children);
-  root->N_dim = N_dim;
-  root->depth = 0;
-  root->color = GREEN;
-  root->nu = 0;
-  root->h = opts->h_init;
-  root->z = malloc (N_dim * sizeof (double));
-  root->z_init = malloc (N_dim * sizeof (double));
-  root->T_init = malloc (N_dim * sizeof (double));
-  load_initial_coordinates (root, opts);
 
+  load_initial_coordinates (root, opts);
   if (opts->verbose>0)
   {
     printf ("initialize_root_node: Loaded first point from file.\n");
@@ -50,7 +37,7 @@ void initialize_root_node (PTnode** root_addr, options_struct *opts)
       compute_residual (N_dim, root->z_init, residual);
       r_nrm = cblas_dnrm2 (N_dim, residual, 1);
       if (opts->verbose>1)
-          printf("initialize_root_node: count=%d, r_nrm=%g.\n",
+          printf("initialize_root_node: count=%3d, r_nrm=%12.5g.\n",
                   count, r_nrm);
       has_converged = (r_nrm < opts->tol_residual);
       has_failed = (count > opts->max_iter);
@@ -65,6 +52,5 @@ void initialize_root_node (PTnode** root_addr, options_struct *opts)
     }
   compute_secant_direction (root);
   write_root_coordinates (root, opts);
-  *root_addr = root;
   return;
 }

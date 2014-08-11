@@ -1,5 +1,6 @@
 #include "mpi.h"
 #include "pampac.h"
+#include <gsl/gsl_cblas.h>
 /**********************************************************************/
 /* Main routine executed by master processor. The bulk of the work is */
 /* in the routine construct_continuation_curve; the remaining code is */
@@ -8,27 +9,41 @@
 void
 master_process (int p_id, int N_p, options_struct * opts)
 {
-  double time_init, time_final, lambda, lambda_min, lambda_max, 
+  double time_init, time_final, lambda, lambda_min, lambda_max,
          h, h_min, h_max;
   int lambda_index, tree_file_count, global_iter, max_global_iter;
   bool has_failed, has_completed;
-  PTnode *root = NULL;
-  if (opts->max_depth<=1)
-    {
-      printf ("Require max_depth > 1; max_depth = %d\n", opts->max_depth);
-      printf ("Terminating...\n");
-      stop_slaves(N_p);
-      return;
-    }
 
-  initialize_root_node (&root, opts);
+  /* Setting convenient aliases for optional parameters */
   lambda_min = opts->lambda_min;
   lambda_max = opts->lambda_max;
   lambda_index = opts->lambda_index;
   h_min = opts->h_min;
   h_max = opts->h_max;
-  lambda = root->z[lambda_index];
   max_global_iter = opts->max_global_iter;
+
+  /* First verification: meaningful tree depth must be larger than 1 */
+  if (opts->max_depth<=1)
+    {
+      printf ("master_process: Require max_depth > 1; max_depth = %d\n",
+              opts->max_depth);
+      printf ("Terminating...\n");
+      goto cleanup;
+    }
+
+  /* Second verification: Allocate root_node successfully */
+  PTnode *root = NULL;
+  has_failed = (!create_root_node (&root, opts));
+  if (has_failed)
+    {
+      printf ("master_process: Failed to allocate memory for root node.\n");
+      printf ("Terminating...\n");
+      goto cleanup;
+    }
+
+  initialize_root_node (root, opts);
+
+  lambda = root->z[lambda_index];
 
   tree_file_count = 0;
   global_iter = 0;
@@ -39,9 +54,9 @@ master_process (int p_id, int N_p, options_struct * opts)
   time_init = MPI_Wtime ();
 
   /* Macro to execute command and log image of tree if requested */
-#define LOG_TREE(comm,n) (comm);		  \
+#define LOG_TREE(comm,n) (comm);          \
                      if (opts->verbose>n) \
-		       visualize_tree (root, opts, tree_file_count++)
+               visualize_tree (root, opts, tree_file_count++)
   LOG_TREE(NULL,1); /* Log image of initial node if necessary */
   while (!has_completed && !has_failed)
     {
@@ -65,24 +80,29 @@ master_process (int p_id, int N_p, options_struct * opts)
   if  (opts->verbose>0)
     {
       if (has_completed)
-	{
-	  printf ("master_process: completed main loop\n");
-	  printf ("Time elapsed: %g\n", time_final - time_init);
-	  printf ("Global_Iter = %d global iterations.\n", global_iter);
-	  printf ("has_completed = %d, has_failed = %d\n", has_completed, has_failed);
-	  printf ("lambda =%10g, lambda_min=%10g, lambda_max=%10g\n",
-		  lambda, lambda_min, lambda_max);
-	  printf ("h = %10g, h_min = %10g, h_max = %10g\n",h,h_min,h_max);
-	}
+    {
+      printf ("master_process: completed main loop\n");
+      printf ("Time elapsed: %g\n", time_final - time_init);
+      printf ("Global_Iter = %d global iterations.\n", global_iter);
+      printf ("has_completed = %d, has_failed = %d\n", has_completed, has_failed);
+      printf ("lambda =%10g, lambda_min=%10g, lambda_max=%10g\n",
+          lambda, lambda_min, lambda_max);
+      printf ("h = %10g, h_min = %10g, h_max = %10g\n",h,h_min,h_max);
+    }
       else
-	printf ("Premature termination:has_completed = %d, has_failed = %d\n",
-		has_completed, has_failed);
+    printf ("Premature termination:has_completed = %d, has_failed = %d\n",
+        has_completed, has_failed);
     }
   write_root_coordinates (root, opts);
-  stop_slaves(N_p);
-  free (root->z_init);
-  root->z_init = NULL;
-  delete_tree (root);
-  root = NULL;
+  cleanup:
+    if (opts->verbose>0)
+      printf("master_process: Shutting down slave processes.");
+    stop_slaves(N_p);
+    if (opts->verbose>0)
+      printf("master_process: Cleaning up memory allocated for tree.");
+    free (root->z_init);
+    root->z_init = NULL;
+    delete_tree (root);
+    root = NULL;
   return;
 }

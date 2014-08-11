@@ -14,25 +14,25 @@
 /**********************************************************************/
 typedef struct options_struct
 {
-  int N_dim;			// dimensions of problem
-  double lambda_min;		// starting continuation parameter value
-  double lambda_max;		// terminating continuation parameter value
-  int lambda_index;		// index of continuation parameter [0-based]
-  int lambda_dir;		// initial direction of tangent (+1 or -1)
-  double delta_lambda;		// initial perturbation in parameter
+  int N_dim;            // dimensions of problem
+  double lambda_min;        // starting continuation parameter value
+  double lambda_max;        // terminating continuation parameter value
+  int lambda_index;     // index of continuation parameter [0-based]
+  int lambda_dir;       // initial direction of tangent (+1 or -1)
+  double delta_lambda;      // initial perturbation in parameter
 
-  double h_min;			// lower bound on step-size
-  double h_max;			// upper bound on step-size
-  double h_init;		// starting value for step-size
+  double h_min;         // lower bound on step-size
+  double h_max;         // upper bound on step-size
+  double h_init;        // starting value for step-size
 
-  int max_iter;			// max. Newton iterations within corrector steps
-  double tol_residual;		// convergence tolerance for corrector steps
-  double mu;	                // threshold for divergence
-  double gamma;	                // tolerance for "nearing convergence"
+  int max_iter;         // max. Newton iterations within corrector steps
+  double tol_residual;      // convergence tolerance for corrector steps
+  double mu;                    // threshold for divergence
+  double gamma;                 // tolerance for "nearing convergence"
 
-  int max_depth;		// max. depth of tree for parallel processes
-  int max_children;		// max. number of children a process can seed
-  double scale_process[MAX_CHILDREN];	// step-size scaling factors
+  int max_depth;        // max. depth of tree for parallel processes
+  int max_children;     // max. number of children a process can seed
+  double scale_process[MAX_CHILDREN];   // step-size scaling factors
   int max_global_iter;          // max. iterations of global continuation loop
 
   int verbose;                  // Integer flag for controlling output
@@ -99,7 +99,8 @@ extern void slave_process (int);
 extern options_struct parse_options (char*);
 
 extern void load_initial_coordinates (PTnode*, options_struct*);
-extern void initialize_root_node (PTnode**, options_struct*);
+extern bool create_root_node (PTnode**, options_struct*);
+extern void initialize_root_node (PTnode*, options_struct*);
 extern bool get_second_point (int, double*, options_struct*);
 extern double compute_secant_direction (PTnode*);
 extern void assign_predictor_steps (PTnode*, options_struct*);
