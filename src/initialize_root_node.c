@@ -4,16 +4,7 @@ void initialize_root_node (PTnode* root, options_struct *opts)
 {
   int k, N_dim = opts->N_dim;
 
-  load_initial_coordinates (root, opts);
-  if (opts->verbose>0)
-  {
-    printf ("initialize_root_node: Loaded first point from file.\n");
-    compute_residual (root->N_dim, root->z, root->T_init);
-    print_PTnode (root);
-    double r_nrm = cblas_dnrm2 (root->N_dim, root->T_init, 1);
-    printf("Initial residual = %g\n", r_nrm);
-    printf("Initial lambda = %g\n", root->z[opts->lambda_index]);
-  }
+
 
   for (k=0; k<N_dim; k++)
     root->z_init[k] = root->z[k];

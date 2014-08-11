@@ -41,9 +41,27 @@ master_process (int p_id, int N_p, options_struct * opts)
       goto cleanup;
     }
 
-  initialize_root_node (root, opts);
+  /* Third verification: Load initial point from disk */
+  has_failed = (!load_initial_coordinates (root, opts));
+  if (has_failed)
+    {
+      printf ("master_process: Failed to read first point into root node.\n");
+      printf ("Terminating...\n");
+      goto cleanup;
+    }
 
   lambda = root->z[lambda_index];
+  if (opts->verbose>0)
+  {
+    printf ("master_process: Loaded first point from file.\n");
+    compute_residual (root->N_dim, root->z, root->T_init);
+    print_PTnode (root);
+    double r_nrm = cblas_dnrm2 (root->N_dim, root->T_init, 1);
+    printf("Initial residual = %g\n", r_nrm);
+    printf("Initial lambda = %g\n", lambda);
+  }
+
+  initialize_root_node (root, opts);
 
   tree_file_count = 0;
   global_iter = 0;

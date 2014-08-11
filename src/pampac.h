@@ -98,7 +98,7 @@ extern void master_process (int, int, options_struct *);
 extern void slave_process (int);
 extern options_struct parse_options (char*);
 
-extern void load_initial_coordinates (PTnode*, options_struct*);
+extern bool load_initial_coordinates (PTnode*, options_struct*);
 extern bool create_root_node (PTnode**, options_struct*);
 extern void initialize_root_node (PTnode*, options_struct*);
 extern bool get_second_point (int, double*, options_struct*);
