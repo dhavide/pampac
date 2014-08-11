@@ -1,17 +1,36 @@
 ################################################################################
 # Macro definitions
 ################################################################################
+MPICC   = /usr/bin/mpicc
+MPIEXEC = /usr/bin/mpiexec
+CFLAGS = -std=c99 -g -Wall
 
-TOPLEVEL = ../..
-include ${TOPLEVEL}/Makefile.in  # Parse Makefile.in for generic macros
+CSRC = $(wildcard *.c)
+OBJS  = $(CSRC:.c=.o)
+
 
 NPROC ?= 4
-OBJS = main.o compute_residual.o single_corrector_step.o setup_teardown.o
+LIBPAMPAC=/home/dhavide/repositories/pampac/lib/libpampac.a
+LIBPATHS = -L/usr/lib/atlas-base -L/home/dhavide/repositories/pampac/lib
+INCPATHS = -I/home/dhavide/repositories/pampac/src
+
 # Add dependence on libfftw3 into macro LIBS
 # (macro LIBS is initialized in Makefile.in)
+
 FFTW  = -lfftw3
-LIBS += ${FFTW}
+MATH       = -lm
+LAPACK     = /usr/lib/atlas-base/liblapack_atlas.so.3 /usr/lib/libcblas.so.3
+BLAS       = -lgsl -lgslcblas
+PAMPAC     = -lpampac
+LIBS       = ${LAPACK} ${PAMPAC} ${FFTW}  ${BLAS} ${MATH}
 INCPATHS += -I /usr/include/atlas
+################################################################################
+# Rules
+################################################################################
+.SUFFIXES: .o .c
+.c.o:
+	${MPICC} ${INCPATHS} ${CFLAGS} -c $< -o $@
+
 ################################################################################
 # Targets
 ################################################################################
@@ -23,6 +42,8 @@ exec: KSmain
 
 KSmain: $(OBJS)
 	${MPICC} $(LIBPATHS) -o $@ $(OBJS) $(LIBS)
+
+# /usr/lib/atlas-base/liblapack_atlas.so.3
 
 clean:
 	/bin/rm -f *~ *.o *.d KSmain output.txt
