@@ -1,29 +1,32 @@
 ################################################################################
 # Macro definitions
 ################################################################################
+MAKE    = /usr/bin/make
+MPIF90 = /usr/bin/mpif90
+MPIF77 = /usr/bin/mpif77
+MPICC   = /usr/bin/mpicc
+MPIEXEC = /usr/bin/mpiexec
+CFLAGS = -std=c99 -g -Wall
 
-TOPLEVEL = .
-include ${TOPLEVEL}/Makefile.in  # Parse Makefile.in for generic macros
+LIBNAME = lib/libpampac.a
 
+CSRC = $(wildcard src/*.c)
+OBJS  = $(CSRC:.c=.o)
+
+################################################################################
+# Rules
+################################################################################
+.SUFFIXES: .o .f90 .f .c
+.c.o:
+	${MPICC} ${INCPATHS} ${CFLAGS} -c $< -o $@
 ################################################################################
 # Targets
 ################################################################################
-all:
-	${MAKE} lib
-	${MAKE} examples
+all: lib
 
-lib:
-	cd src; ${MAKE} lib
-
-examples:
-	cd examples; ${MAKE} all
-
+lib: ${OBJS} src/pampac.h
+	ar cvq ${LIBNAME} ${OBJS}
 clean:
-	rm -f *~
-	cd src; ${MAKE} clean
-	cd examples; ${MAKE} clean
+	rm -f ${OBJS} ${LIBNAME} *~
 
-remake:
-	${MAKE} clean
-	${MAKE} all
 ################################################################################
