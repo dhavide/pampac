@@ -3,8 +3,7 @@
 /* A sample tree to use for testing pampac library routines. */
 
 options_struct
-set_options(int depth, int max_children)
-{
+set_options(int depth, int max_children) {
   options_struct opts;
   int k;
   opts.N_dim = 6;
@@ -31,8 +30,7 @@ set_options(int depth, int max_children)
   return (opts);
 }
 
-PTnode* make_tree(options_struct *opts)
-{
+PTnode* make_tree(options_struct *opts) {
   int k;
   PTnode *root = init_PTnode (opts->max_children);
   root->N_dim = opts->N_dim;
@@ -44,25 +42,22 @@ PTnode* make_tree(options_struct *opts)
   root->z = malloc (root->N_dim * sizeof (double));
   root->T_parent = malloc (root->N_dim * sizeof (double));
   root->z_parent = malloc (root->N_dim * sizeof (double));
-  for (k=0; k<root->N_dim; k++)
-    {
-      root->z[k] = (double)(k+2);
-      root->z_parent[k] = (double)(k+1);
-    }
+  for (k=0; k<root->N_dim; k++) {
+    root->z[k] = (double)(k+2);
+    root->z_parent[k] = (double)(k+1);
+  }
   compute_secant_direction (root);
   /* Generate new levels of tree (nodes only) */
-  for (k=1; k<opts->max_depth; k++)
-    {
-      construct_predictor_nodes (root, opts);
-      assign_processes (root, 50);  /* Assume large number of processors */
-      assign_predictor_steps (root, opts);
-    }
+  for (k=1; k<opts->max_depth; k++) {
+    construct_predictor_nodes (root, opts);
+    assign_processes (root, 50);  /* Assume large number of processors */
+    assign_predictor_steps (root, opts);
+  }
   return (root);
 }
 
 
-void tree43(PTnode* root)
-{
+void tree43(PTnode* root) {
   /* Given tree of depth 4 with 3 children per node, assigns various
      colors to the nodes and prunes a few subtrees. */
   root->color = GREEN;
