@@ -1,10 +1,11 @@
 #include <math.h>
 #include <complex.h>
 #include <fftw3.h>
+#include "pampac.h"
 
-extern void print_cplx (int N_cplx, fftw_complex * z);
-extern void print_real (int N_real, double *z);
-extern void set_differentiation_matrices (int N_grid, fftw_complex *D, double *D2, double *D4);
-extern void setup_teardown (int N_real);
+extern void print_cplx (int, fftw_complex*);
+extern void print_real (int, double*);
+extern void set_differentiation_matrices (int, fftw_complex*, double*, double*);
+extern void setup_teardown (int);
 
 double Aval;

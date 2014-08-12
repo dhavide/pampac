@@ -4,13 +4,12 @@
 /* of each node to stdout as it goes.                                 */
 /**********************************************************************/
 void
-print_tree (PTnode *alpha)
-{
+print_tree (PTnode *alpha) {
   int k;
   if (alpha->child != NULL)
     for (k = 0; k < alpha->max_children; k++)
       if (alpha->child[k] != NULL)
-	print_tree (alpha->child[k]);
+        print_tree (alpha->child[k]);
   printf ("\n");
   print_PTnode (alpha);
   return;

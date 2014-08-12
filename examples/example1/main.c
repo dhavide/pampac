@@ -1,4 +1,3 @@
-#include "pampac.h"
 #include "mpi.h"
 #include "string.h"
 #include "KS_example.h"
@@ -7,8 +6,7 @@
 /* custom data structure opts.                                        */
 /**********************************************************************/
 int
-main (int argc, char *argv[])
-{
+main (int argc, char *argv[]) {
   int p_id;         /* rank of process */
   int N_p;          /* number of processes */
   int N_dim;                    /* number of variables */
@@ -22,34 +20,31 @@ main (int argc, char *argv[])
   MPI_Init (&argc, &argv);               /* start up MPI */
   MPI_Comm_rank (MPI_COMM_WORLD, &p_id); /* find process ID */
   MPI_Comm_size (MPI_COMM_WORLD, &N_p);  /* find # of processes */
-  if (p_id == 0)
-    {
-      options_struct opts;      /* problem/algorithm parameters */
-      opts = parse_options (argv[1]);
-      N_dim = opts.N_dim;
-      MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
-      opts.input_file_name = argv[2];
-      opts.output_file_name = argv[3];
-      opts.base_name_tree = argv[4];
-      /* Initialisation */
-      setup_teardown(N_dim);
-      master_process (N_p, &opts);
-      setup_teardown(N_dim); /* Clean-up */
-      printf("PID %d: Cleaning up master process.\n", p_id);
-      fflush(stdout);
-      MPI_Barrier (MPI_COMM_WORLD);
-    }
-  else
-    {
-      /* N_dim is read from disk by master and broadcast to slaves */
-      MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
-      setup_teardown(N_dim); /* Initialisation */
-      slave_process (N_dim);
-      setup_teardown(N_dim); /* Clean-up */
-      printf("PID %d: Cleaning up slave process.\n", p_id);
-      fflush(stdout);
-      MPI_Barrier (MPI_COMM_WORLD);
-    }
+  if (p_id == 0) {
+    options_struct opts;      /* problem/algorithm parameters */
+    opts = parse_options (argv[1]);
+    N_dim = opts.N_dim;
+    MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    opts.input_file_name = argv[2];
+    opts.output_file_name = argv[3];
+    opts.base_name_tree = argv[4];
+    /* Initialisation */
+    setup_teardown(N_dim);
+    master_process (N_p, &opts);
+    setup_teardown(N_dim); /* Clean-up */
+    printf("PID %d: Cleaning up master process.\n", p_id);
+    fflush(stdout);
+    MPI_Barrier (MPI_COMM_WORLD);
+  } else {
+    /* N_dim is read from disk by master and broadcast to slaves */
+    MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    setup_teardown(N_dim); /* Initialisation */
+    slave_process (N_dim);
+    setup_teardown(N_dim); /* Clean-up */
+    printf("PID %d: Cleaning up slave process.\n", p_id);
+    fflush(stdout);
+    MPI_Barrier (MPI_COMM_WORLD);
+  }
   MPI_Finalize ();      /* shut down MPI */
   return 0;
 }

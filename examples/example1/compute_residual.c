@@ -4,7 +4,7 @@
 
 void
 set_differentiation_matrices (int N_grid,
-			      fftw_complex * D, double *D2, double *D4)
+                              fftw_complex * D, double *D2, double *D4)
 /******************************************************************************/
 /* Helper routine for compute_residual and for single_corrector_step. Observe */
 /* that differentiation matrices are diagonal and so are stored as 1D arrays. */
@@ -17,15 +17,14 @@ set_differentiation_matrices (int N_grid,
   D[0] = 0.0;
   D2[0] = 0.0;
   D4[0] = 0.0;
-  for (k = 1; k < N_grid / 2; k++)
-    {
-      D[k] = 1.0I*k;
-      D[N_grid - k] = -D[k];
-      D2[k] = -pow (k, 2);
-      D2[N_grid - k] = -pow (k, 2);
-      D4[k] = pow (k, 4);
-      D4[N_grid - k] = pow (k, 4);
-    }
+  for (k = 1; k < N_grid / 2; k++) {
+    D[k] = 1.0I*k;
+    D[N_grid - k] = -D[k];
+    D2[k] = -pow (k, 2);
+    D2[N_grid - k] = -pow (k, 2);
+    D4[k] = pow (k, 4);
+    D4[N_grid - k] = pow (k, 4);
+  }
 
   D[N_grid / 2] = 0.0;
   D2[N_grid / 2] = -pow (N_grid, 2) / 4.0;
@@ -36,7 +35,7 @@ set_differentiation_matrices (int N_grid,
 /******************************************************************************/
 
 void
-compute_residual (int N_real, double *Z, double *Res)
+compute_residual (int N_real, const double *Z, double *Res)
 /******************************************************************************/
 /* This function computes a particular nonlinear function of Z and returns    */
 /* the result in the array Res. The function arises from a pseudo-spectral    */
@@ -96,7 +95,7 @@ compute_residual (int N_real, double *Z, double *Res)
   static bool setup_complete = false;
   int N_grid, k;
   fftw_complex c, nu;
-  
+
   /* N_real = number of REAL variables input */
   N_grid = (N_real / 2) - 2;	/* Number of collocation points */
   /*
@@ -106,83 +105,78 @@ compute_residual (int N_real, double *Z, double *Res)
      whether to initialize or release memory & data structures.
    */
 
-  if (Z == NULL || Res == NULL)
-    {
-      if (!setup_complete)
-	{
-	  /* Setting up static arrays and data structures */
-	  D = fftw_alloc_complex (N_grid);
-	  D2 = fftw_alloc_real (N_grid);
-	  D4 = fftw_alloc_real (N_grid);
-	  X_cplx = fftw_alloc_complex (N_grid);
-	  DX_cplx = fftw_alloc_complex (N_grid);
-	  Res_cplx = fftw_alloc_complex (N_grid);
+  if (Z == NULL || Res == NULL) {
+    if (!setup_complete) {
+      /* Setting up static arrays and data structures */
+      D = fftw_alloc_complex (N_grid);
+      D2 = fftw_alloc_real (N_grid);
+      D4 = fftw_alloc_real (N_grid);
+      X_cplx = fftw_alloc_complex (N_grid);
+      DX_cplx = fftw_alloc_complex (N_grid);
+      Res_cplx = fftw_alloc_complex (N_grid);
 
-	  set_differentiation_matrices (N_grid, D, D2, D4);
-	  plan_fft =
-	    fftw_plan_dft_1d (N_grid, X_cplx, X_cplx, FFTW_FORWARD,
-			      FFTW_MEASURE);
-	  plan_ifft =
-	    fftw_plan_dft_1d (N_grid, X_cplx, X_cplx, FFTW_BACKWARD,
-			      FFTW_MEASURE);
+      set_differentiation_matrices (N_grid, D, D2, D4);
+      plan_fft =
+        fftw_plan_dft_1d (N_grid, X_cplx, X_cplx, FFTW_FORWARD,
+                          FFTW_MEASURE);
+      plan_ifft =
+        fftw_plan_dft_1d (N_grid, X_cplx, X_cplx, FFTW_BACKWARD,
+                          FFTW_MEASURE);
 
-	  /* Static flag changed to signal future calls to compute_residual */
-	  setup_complete = true;
+      /* Static flag changed to signal future calls to compute_residual */
+      setup_complete = true;
 
-	  return;
-	}
-      /* Cleaning up static arrays and data structures */
-      fftw_free (D);
-      D = NULL;
-      fftw_free (D2);
-      D2 = NULL;
-      fftw_free (D4);
-      D4 = NULL;
-      fftw_free (X_cplx);
-      X_cplx = NULL;
-      fftw_free (DX_cplx);
-      DX_cplx = NULL;
-      fftw_free (Res_cplx);
-      Res_cplx = NULL;
-      fftw_destroy_plan (plan_fft);
-      fftw_destroy_plan (plan_ifft);
-      /* Static flag reset for future calls to compute_residual */
-      setup_complete = false;
       return;
     }
+    /* Cleaning up static arrays and data structures */
+    fftw_free (D);
+    D = NULL;
+    fftw_free (D2);
+    D2 = NULL;
+    fftw_free (D4);
+    D4 = NULL;
+    fftw_free (X_cplx);
+    X_cplx = NULL;
+    fftw_free (DX_cplx);
+    DX_cplx = NULL;
+    fftw_free (Res_cplx);
+    Res_cplx = NULL;
+    fftw_destroy_plan (plan_fft);
+    fftw_destroy_plan (plan_ifft);
+    /* Static flag reset for future calls to compute_residual */
+    setup_complete = false;
+    return;
+  }
   /* Main routine: compute nonlinear residual */
-  if (!setup_complete)
-    {
-      printf
-	("Error: Call made to compute_residual without prior initialisation!\n");
-      printf
-	("       Call compute_residual ( N, Z, Res ) with NULL pointer for Z or Res to initialise.\n");
-      return;
-    }
+  if (!setup_complete) {
+    printf
+    ("Error: Call made to compute_residual without prior initialisation!\n");
+    printf
+    ("       Call compute_residual ( N, Z, Res ) with NULL pointer for Z or Res to initialise.\n");
+    return;
+  }
   c = Z[N_real - 4] + 1.0I*Z[N_real-3];
   nu = Z[N_real - 2] + 1.0I*Z[N_real-1];
   /* Accumulate linear terms first */
-  for (k = 0; k < N_grid; k++)
-    {
-      X_cplx[k] = Z[2*k] + 1.0I * Z[2*k + 1];
-      Res_cplx[k] = D2[k] + nu * D4[k];
-      Res_cplx[k] *= X_cplx[k];
-      DX_cplx[k] = D[k] * X_cplx[k];
-      Res_cplx[k] -= c * DX_cplx[k];
-    }
+  for (k = 0; k < N_grid; k++) {
+    X_cplx[k] = Z[2*k] + 1.0I * Z[2*k + 1];
+    Res_cplx[k] = D2[k] + nu * D4[k];
+    Res_cplx[k] *= X_cplx[k];
+    DX_cplx[k] = D[k] * X_cplx[k];
+    Res_cplx[k] -= c * DX_cplx[k];
+  }
   /* Now use DFTs to compute nonlinear terms of function. */
   /* Equivalent to X_cplx = N_grid * ifft(X_cplx) in Matlab... */
   fftw_execute_dft (plan_ifft, X_cplx, X_cplx);
   /* Equivalent to DX_cplx = N_grid * ifft(DX_cplx) in Matlab... */
   fftw_execute_dft (plan_ifft, DX_cplx, DX_cplx);
 
-  for (k = 0; k < N_grid; k++)
-    {
-      X_cplx[k] /= N_grid;	/* Rescale: FFTW's "ifft" is scaled by N_grid */
-      DX_cplx[k] /= N_grid;	/* Rescale: FFTW's "ifft" is scaled by N_grid */
-      DX_cplx[k] *= X_cplx[k];	/* Same as DX_cplx = ifft(DX_cplx) .* ifft(X_cplx) */
-      X_cplx[k] = csin (X_cplx[k]);	/* Same as X_cplx = sin( ifft(X_cplx) ) */
-    }
+  for (k = 0; k < N_grid; k++) {
+    X_cplx[k] /= N_grid;	/* Rescale: FFTW's "ifft" is scaled by N_grid */
+    DX_cplx[k] /= N_grid;	/* Rescale: FFTW's "ifft" is scaled by N_grid */
+    DX_cplx[k] *= X_cplx[k];	/* Same as DX_cplx = ifft(DX_cplx) .* ifft(X_cplx) */
+    X_cplx[k] = csin (X_cplx[k]);	/* Same as X_cplx = sin( ifft(X_cplx) ) */
+  }
 
   /* Equivalent to X_cplx = fft(X_cplx) in Matlab */
   fftw_execute_dft (plan_fft, X_cplx, X_cplx);
@@ -191,13 +185,12 @@ compute_residual (int N_real, double *Z, double *Res)
 
   /* Finally, accumulate nonlinear terms into residual vector and unpack real
      and imaginary components into vector Res of *doubles*. */
-  for (k = 0; k < N_grid; k++)
-    {
-      Res_cplx[k] += DX_cplx[k];
-      Res_cplx[k] += Aval * X_cplx[k];
-      Res[2*k] = creal (Res_cplx[k]);
-      Res[2*k + 1] = cimag (Res_cplx[k]);
-    }
+  for (k = 0; k < N_grid; k++) {
+    Res_cplx[k] += DX_cplx[k];
+    Res_cplx[k] += Aval * X_cplx[k];
+    Res[2*k] = creal (Res_cplx[k]);
+    Res[2*k + 1] = cimag (Res_cplx[k]);
+  }
   Res[N_real-4] = 0.0;
   Res[N_real-3] = 0.0;
   Res[N_real-2] = 0.0;

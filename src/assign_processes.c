@@ -8,8 +8,7 @@
 /* node is traversed, its pid, its label, and its depth is recorded.  */
 /**********************************************************************/
 void
-assign_processes (PTnode *root, int N_proc)
-{
+assign_processes (PTnode *root, int N_proc) {
   Queue q;
   PTnode *node;
   int k, label = 0, pid = 1;
@@ -22,29 +21,25 @@ assign_processes (PTnode *root, int N_proc)
   /* Breadth-first traversal of tree */
   init_queue (&q);
   enqueue (&q, root);
-  while (!empty_queue (&q))
-    {
-      node = front_of_queue (&q);
-      dequeue (&q); /* Mark node as visited by dequeuing */
-      /* Assign processor ID=MPI_PROC_NULL to nodes:
-	 > that have previously converged (i.e., GREEN)
-	 > that have diverged (i.e., BLACK)
-	 > when there are no more processors available */
-      node->label = label++;
-      node->pid = MPI_PROC_NULL;
-      if (node->color==RED || node->color==YELLOW)
-	if (pid <= N_proc-1)
-	  node->pid = pid++;
-      /* Append children of node just dequeued (if any) to end of queue */
-      if (node->child != NULL)
-	{
-	  for (k=0; k<node->max_children; k++)
-	    {
-	      if (node->child[k] != NULL)
-		{
-		  enqueue (&q, node->child[k]);
-		}
-	    }
-	}
+  while (!empty_queue (&q)) {
+    node = front_of_queue (&q);
+    dequeue (&q); /* Mark node as visited by dequeuing */
+    /* Assign processor ID=MPI_PROC_NULL to nodes:
+    > that have previously converged (i.e., GREEN)
+    > that have diverged (i.e., BLACK)
+    > when there are no more processors available */
+    node->label = label++;
+    node->pid = MPI_PROC_NULL;
+    if (node->color==RED || node->color==YELLOW)
+      if (pid <= N_proc-1)
+        node->pid = pid++;
+    /* Append children of node just dequeued (if any) to end of queue */
+    if (node->child != NULL) {
+      for (k=0; k<node->max_children; k++) {
+        if (node->child[k] != NULL) {
+          enqueue (&q, node->child[k]);
+        }
+      }
     }
+  }
 }

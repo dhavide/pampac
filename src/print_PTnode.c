@@ -3,8 +3,7 @@
 /* Given a PTnode, print its contents to stdout.                      */
 /**********************************************************************/
 void
-print_PTnode (PTnode *alpha)
-{
+print_PTnode (PTnode *alpha) {
   printf ("\nN_dim = %d\n", alpha->N_dim);
   printf ("depth = %d\n", alpha->depth);
   printf ("max_children = %d\n", alpha->max_children);
@@ -29,34 +28,28 @@ print_PTnode (PTnode *alpha)
   int k, nt=4;
   if (alpha->z==NULL)
     printf("alpha->z=%p\n",alpha->z);
-  else
-    if (alpha->N_dim>=nt)
-      {
+  else if (alpha->N_dim>=nt) {
     printf("z = (");
     for (k=0; k<nt; k++)
       printf(" %10.3e,", alpha->z[k]);
     printf("... )\n");
-      }
+  }
 
   if (alpha->z_init==NULL)
     printf("alpha->z_init=%p\n",alpha->z);
-  else
-    if (alpha->N_dim>=nt)
-      {
+  else if (alpha->N_dim>=nt) {
     printf("z_init = (");
     for (k=0; k<nt; k++)
       printf(" %10.3e,", alpha->z_init[k]);
     printf("... )\n");
-      }
+  }
 
   if (alpha->T_init==NULL)
     printf("alpha->T_init=%p\n",alpha->z);
-  else
-    if (alpha->N_dim>=nt)
-      {
+  else if (alpha->N_dim>=nt) {
     printf("T_init = (");
     for (k=0; k<nt; k++)
       printf(" %10.3e,", alpha->T_init[k]);
     printf("... )\n");
-      }
+  }
 }

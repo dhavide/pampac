@@ -4,8 +4,7 @@
 /* Computes normalised secant vector from two points on a curve.      */
 /**********************************************************************/
 double
-compute_secant_direction (PTnode *alpha)
-{
+compute_secant_direction (PTnode *alpha) {
   int k, N;
   double *z, *z_old, *delta_z, delta_z_norm;
   N = alpha->N_dim;

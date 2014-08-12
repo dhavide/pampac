@@ -7,15 +7,12 @@
 /* node in the tree correctly after updating the root node.           */
 /**********************************************************************/
 void
-assign_depth (PTnode * node, int depth)
-{
+assign_depth (PTnode * node, int depth) {
   int k;
-  for (k = 0; k < node->max_children; k++)
-    {
-      if (node->child[k] != NULL)
-	{
-	  assign_depth (node->child[k], depth + 1);
-	}
+  for (k = 0; k < node->max_children; k++) {
+    if (node->child[k] != NULL) {
+      assign_depth (node->child[k], depth + 1);
     }
+  }
   node->depth = depth;
 }

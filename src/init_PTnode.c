@@ -5,15 +5,14 @@
 /* in principle to detect errors in which fields have not been        */
 /* assigned). As such, pointers are initialised with NULL, integer-   */
 /* valued fields are initialised with -1 and real-valued fields are   */
-/* initialised with NAN.                                              */ 
+/* initialised with NAN.                                              */
 /* NOTE: if node has non-NULL values in the fields that are pointers, */
 /* whatever was stored in that memory will be lost on overwriting the */
 /* pointers with NULL. Be sure that this is the intention when using  */
 /* the function init_PTnode.                                          */
 /**********************************************************************/
 PTnode *
-init_PTnode ( int max_children)
-{
+init_PTnode ( int max_children) {
   PTnode *alpha;
   int k;
   alpha = malloc (sizeof (*alpha));

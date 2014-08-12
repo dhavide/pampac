@@ -5,8 +5,7 @@
 /* by the algorithm to control and tune performance.                  */
 /**********************************************************************/
 options_struct
-parse_options (char *file_name)
-{
+parse_options (char *file_name) {
   FILE *param_file;
   options_struct opts;
   char buff[BUFSIZ], def[STRING_LEN];
@@ -15,17 +14,14 @@ parse_options (char *file_name)
 
   opts.verbose = 0; /* Do not print output by default */
   param_file = fopen (file_name, "r");
-  if (param_file == NULL)
-    {
-      printf ("Error Opening File.\n");
-      exit (1);
-    }
+  if (param_file == NULL) {
+    printf ("Error Opening File.\n");
+    exit (1);
+  }
   /* Parse param_file, one line at a time */
-  while (fgets (buff, sizeof (buff), param_file) != NULL)
-    {
-      if (sscanf (buff, "%s %s %s", def, param_name, param_value) == 3
-      && strcmp (def, "@param") == 0)
-    {
+  while (fgets (buff, sizeof (buff), param_file) != NULL) {
+    if (sscanf (buff, "%s %s %s", def, param_name, param_value) == 3
+        && strcmp (def, "@param") == 0) {
       /* Expect positive integer */
       if (strcmp (param_name, "N_DIM") == 0)
         opts.N_dim = atoi (param_value);
@@ -73,17 +69,14 @@ parse_options (char *file_name)
         opts.max_global_iter = atoi (param_value);
 
       /* Expect positive integer */
-      if (strcmp (param_name, "MAX_CHILDREN") == 0)
-        {
-          opts.max_children = atoi (param_value);
-          is_max_children_set = true;
-        }
+      if (strcmp (param_name, "MAX_CHILDREN") == 0) {
+        opts.max_children = atoi (param_value);
+        is_max_children_set = true;
+      }
 
-      if (is_max_children_set)
-        {
-          int i;
-          for (i = 0; i <= opts.max_children; i++)
-        {
+      if (is_max_children_set) {
+        int i;
+        for (i = 0; i <= opts.max_children; i++) {
           char str[19] = "SCALE_PROCESS_";
           char str_num[3];
           sprintf (str_num, "%d", i);
@@ -92,9 +85,9 @@ parse_options (char *file_name)
           if (strcmp (param_name, str) == 0)
             opts.scale_process[i] = atof (param_value);
         }
-        }
+      }
     }
-    }
+  }
 
   /* Set opts.lambda_dir using opts.h_init */
   /* yields +1 or -1 (direction of initial step along curve) */
