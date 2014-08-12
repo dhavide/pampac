@@ -5,19 +5,29 @@
 /* by the algorithm to control and tune performance.                  */
 /**********************************************************************/
 options_struct
-parse_options (char *file_name) {
+parse_options (int argc, char *argv[]) {
   FILE *param_file;
   options_struct opts;
   char buff[BUFSIZ], def[STRING_LEN];
   char param_name[STRING_LEN], param_value[STRING_LEN];
   bool is_max_children_set = false;
 
-  opts.verbose = 0; /* Do not print output by default */
-  param_file = fopen (file_name, "r");
+  if (argc<3) {
+      printf ("parse_inputs: More command line arguments required.\n");
+      printf ("Require param_file input_file output_file.\n");
+  }
+  param_file = fopen (argv[1], "r");
   if (param_file == NULL) {
     printf ("Error Opening File.\n");
     exit (1);
   }
+  opts.input_file_name = argv[2];
+  opts.output_file_name = argv[3];
+  /* Needed for dumping tree visualizations to disk */
+  if (argc>3)
+    opts.tree_base_filename = argv[4];
+
+  opts.verbose = 0; /* Do not print output by default */
   /* Parse param_file, one line at a time */
   while (fgets (buff, sizeof (buff), param_file) != NULL) {
     if (sscanf (buff, "%s %s %s", def, param_name, param_value) == 3
@@ -88,12 +98,13 @@ parse_options (char *file_name) {
       }
     }
   }
-
+  fclose (param_file);
   /* Set opts.lambda_dir using opts.h_init */
   /* yields +1 or -1 (direction of initial step along curve) */
   double h = opts.h_init;
   opts.lambda_dir = (h > 0) ? +1.0 : -1.0;
   opts.h_init = (h > 0) ? h : -h;
-  fclose (param_file);
+  /* Initialize counter for tree files (in case needed) */
+  opts.tree_filename_num = 0;
   return opts;
 }

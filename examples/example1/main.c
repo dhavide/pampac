@@ -22,12 +22,9 @@ main (int argc, char *argv[]) {
   MPI_Comm_size (MPI_COMM_WORLD, &N_p);  /* find # of processes */
   if (p_id == 0) {
     options_struct opts;      /* problem/algorithm parameters */
-    opts = parse_options (argv[1]);
+    opts = parse_options (argc, argv);
     N_dim = opts.N_dim;
     MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
-    opts.input_file_name = argv[2];
-    opts.output_file_name = argv[3];
-    opts.base_name_tree = argv[4];
     /* Initialisation */
     setup_teardown(N_dim);
     master_process (N_p, &opts);

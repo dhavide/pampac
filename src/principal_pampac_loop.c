@@ -19,7 +19,6 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
     printf ("principal_pampac_loop: h=%12.5g, h_min=%12.5g\n", h, h_min);
     printf ("Maximum global iterations=%d\n", max_global_iter);
   }
-  //tree_file_count = 0;
 
   global_iter = 0;
   has_failed = false;
@@ -27,26 +26,45 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
   if (opts->verbose > 0)
     printf ("principal_pampac_loop: Beginning global iteration.\n");
 
-//               visualize_tree (root, opts, tree_file_count++)
   /* Log image of initial node if necessary */
+  if (opts->verbose > 2)
+    visualize_tree (root, opts);
+
   time_init = MPI_Wtime ();
   while (!has_completed && !has_failed) {
     has_failed = (global_iter > max_global_iter) || (h < h_min);
     if (has_failed) {
       printf ("principal_pampac_loop:");
       printf (" Failed to attain goal\n");
+      printf ("global iterations=%d, h=%10.5g\n",
+                      global_iter, h);
       break;
     }
     /* Spawn new nodes on tree at leaves if possible. */
     construct_predictor_nodes (root, opts);
     assign_processes (root, N_p);
     assign_predictor_steps (root, opts);
+    if (opts->verbose > 2)
+      visualize_tree (root, opts);
+
     compute_corrector_steps (root, N_p);
     assess_residuals (root, opts);
+    if (opts->verbose > 2)
+      visualize_tree (root, opts);
+
     prune_diverged_nodes (root, opts);
+    if (opts->verbose > 2)
+      visualize_tree (root, opts);
+
     construct_viable_paths (root);
     choose_viable_paths (root);
+    if (opts->verbose > 2)
+      visualize_tree (root, opts);
+
     advance_root_node (&root, opts);
+    if (opts->verbose > 2)
+      visualize_tree (root, opts);
+
     global_iter++;
     lambda = root->z[lambda_index];
     has_completed = (lambda <= lambda_min) || (lambda >= lambda_max);
@@ -60,7 +78,7 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
     else
       printf ("principal_pampac_loop: Premature termination\n");
     printf ("Time elapsed: %g\n", time_final - time_init);
-    printf ("Global_Iter = %d global iterations.\n", global_iter);
+    printf ("global iterations=%d.\n", global_iter);
     printf ("has_completed = %5s, has_failed = %5s\n",
             (has_completed ? " true" : "false"),
             (has_failed ? " true" : "false"));

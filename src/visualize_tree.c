@@ -4,13 +4,16 @@
 /* dot language (compatible with the GraphViz family of graph tools). */
 /**********************************************************************/
 void
-visualize_tree (PTnode *root, options_struct *opts, int num) {
+visualize_tree (PTnode *root, options_struct *opts) {
   int k;
   Queue q;
   PTnode *alpha, *beta;
   char file_name[STRING_LEN];
   FILE *out_file;
-  sprintf ( file_name, "%s-%05d.gv", opts->base_name_tree, num);
+  /* Location of the output file determined by parameters in the data
+   * structure opts. */
+  sprintf (file_name, "%s-%05d.gv",
+           opts->tree_base_filename, opts->tree_filename_num);
   out_file = fopen (file_name, "w");
   if (out_file == NULL) {
     printf ("Error Opening %s.\n", file_name);
@@ -48,5 +51,6 @@ visualize_tree (PTnode *root, options_struct *opts, int num) {
   }
   fprintf (out_file, "}\n");
   fclose (out_file);
+  opts->tree_filename_num += 1;
   return;
 }

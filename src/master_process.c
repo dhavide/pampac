@@ -67,6 +67,9 @@ cleanup:
   stop_slaves(N_p);
   if (opts->verbose>0)
     printf("master_process: Cleaning up memory.\n");
+  /* z_init is a shallow copy in every node of the tree *except* the
+   * root node. As such, z_init must be *explicitly* deallocated
+   * prior to calling the function delete_tree. */
   free (root->z_init);
   root->z_init = NULL;
   delete_tree (root);

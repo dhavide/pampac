@@ -14,31 +14,32 @@
 /**********************************************************************/
 typedef struct options_struct
 {
-  int N_dim;            // dimensions of problem
-  double lambda_min;        // starting continuation parameter value
-  double lambda_max;        // terminating continuation parameter value
-  int lambda_index;     // index of continuation parameter [0-based]
-  int lambda_dir;       // initial direction of tangent (+1 or -1)
-  double delta_lambda;      // initial perturbation in parameter
+  int N_dim;               /* dimensions of problem                   */
+  double lambda_min;       /* lower continuation parameter value      */
+  double lambda_max;       /* upper continuation parameter value      */
+  int lambda_index;        /* continuation parameter index [0-based]  */
+  int lambda_dir;          /* initial direction of tangent (+1 or -1) */
+  double delta_lambda;     /* initial perturbation in parameter       */
 
-  double h_min;         // lower bound on step-size
-  double h_max;         // upper bound on step-size
-  double h_init;        // starting value for step-size
+  double h_min;            /* lower bound on step-size                */
+  double h_max;            /* upper bound on step-size                */
+  double h_init;           /* starting value for step-size            */
 
-  int max_iter;         // max. Newton iterations within corrector steps
-  double tol_residual;      // convergence tolerance for corrector steps
-  double mu;                    // threshold for divergence
-  double gamma;                 // tolerance for "nearing convergence"
+  int max_iter;            /* max. iterations within corrector steps  */
+  double tol_residual;     /* corrector step convergence tolerance    */
+  double mu;               /* threshold for divergence                */
+  double gamma;            /* tolerance for "nearing convergence"     */
 
-  int max_depth;        // max. depth of tree for parallel processes
-  int max_children;     // max. number of children a process can seed
-  double scale_process[MAX_CHILDREN];   // step-size scaling factors
-  int max_global_iter;          // max. iterations of global continuation loop
+  int max_depth;           /* limits parallel processes spawned       */
+  int max_children;        /* limits chold nodes for processes        */
+  double scale_process[MAX_CHILDREN];   /* step-size scaling factors  */
+  int max_global_iter;     /* limits global continuation loop         */
 
-  int verbose;                  // Integer flag for controlling output
-  char* input_file_name;
-  char* output_file_name;
-  char* base_name_tree;
+  int verbose;             /* integer flag for controlling output     */
+  char* input_file_name;   /* parameter file from user                */
+  char* output_file_name;  /* output file for user output             */
+  char* tree_base_filename;/* used to name tree output files          */
+  int tree_filename_num;   /* counter for tree dot files generated    */
 } options_struct;
 
 /**********************************************************************/
@@ -94,15 +95,14 @@ typedef struct Queue {
 /**********************************************************************/
 /* Function prototypes                                                */
 /**********************************************************************/
-extern void master_process (int, options_struct *);
+extern void master_process (int, options_struct*);
 extern void slave_process (int);
-extern options_struct parse_options (char*);
+extern options_struct parse_options (int, char**);
 
 extern bool load_initial_coordinates (PTnode*, options_struct*);
 extern bool create_root_node (PTnode**, options_struct*);
-//extern void initialize_root_node (PTnode*, options_struct*);
 extern bool initialize_secant (PTnode*, options_struct*);
-extern bool get_second_point (int, double*, options_struct*);
+//extern bool get_second_point (int, double*, options_struct*);
 extern double compute_secant_direction (PTnode*);
 extern void assign_predictor_steps (PTnode*, options_struct*);
 extern void construct_predictor_nodes (PTnode*, options_struct*);
@@ -117,7 +117,7 @@ extern void delete_tree (PTnode*);
 extern void print_PTnode (PTnode*);
 extern void print_color (PTnode*, FILE*);
 extern void print_tree (PTnode*);
-extern void visualize_tree (PTnode*, options_struct*, int);
+extern void visualize_tree (PTnode*, options_struct*);
 extern void assign_processes (PTnode*, int);
 extern void assign_depth (PTnode*, int);
 extern void assign_color (PTnode*, NodeColors);
