@@ -17,12 +17,12 @@ print_PTnode (PTnode *alpha)
   printf ("nu_init = %d\n", alpha->nu_init);
   printf ("nu_valid = %d\n", alpha->nu_valid);
   printf ("nu_viable = %d\n", alpha->nu_viable);
-  printf ("h_init = %g\n", alpha->h_init);
-  printf ("h = %g\n", alpha->h);
-  printf ("res_norm = %g\n", alpha->res_norm);
-  printf ("valid_path_length = %g\n", alpha->valid_path_length);
+  printf ("h_init = %12.5g\n", alpha->h_init);
+  printf ("h = %12.5g\n", alpha->h);
+  printf ("res_norm = %12.5g\n", alpha->res_norm);
+  printf ("valid_path_length = %12.5g\n", alpha->valid_path_length);
   printf ("valid_index = %d\n", alpha->valid_index);
-  printf ("viable_path_length = %g\n", alpha->viable_path_length);
+  printf ("viable_path_length = %12.5g\n", alpha->viable_path_length);
   printf ("viable_index = %d\n", alpha->viable_index);
 
   // For sufficiently small problems, print vectors in full
@@ -32,21 +32,21 @@ print_PTnode (PTnode *alpha)
   else
     if (alpha->N_dim>=nt)
       {
-	printf("z = (");
-	for (k=0; k<nt; k++)
-	  printf(" %10.3e,", alpha->z[k]);
-	printf("... )\n");
+    printf("z = (");
+    for (k=0; k<nt; k++)
+      printf(" %10.3e,", alpha->z[k]);
+    printf("... )\n");
       }
-       
+
   if (alpha->z_init==NULL)
     printf("alpha->z_init=%p\n",alpha->z);
   else
     if (alpha->N_dim>=nt)
       {
-	printf("z_init = (");
-	for (k=0; k<nt; k++)
-	  printf(" %10.3e,", alpha->z_init[k]);
-	printf("... )\n");
+    printf("z_init = (");
+    for (k=0; k<nt; k++)
+      printf(" %10.3e,", alpha->z_init[k]);
+    printf("... )\n");
       }
 
   if (alpha->T_init==NULL)
@@ -54,9 +54,9 @@ print_PTnode (PTnode *alpha)
   else
     if (alpha->N_dim>=nt)
       {
-	printf("T_init = (");
-	for (k=0; k<nt; k++)
-	  printf(" %10.3e,", alpha->T_init[k]);
-	printf("... )\n");
+    printf("T_init = (");
+    for (k=0; k<nt; k++)
+      printf(" %10.3e,", alpha->T_init[k]);
+    printf("... )\n");
       }
 }

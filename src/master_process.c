@@ -7,20 +7,12 @@
 /* largely for preparation and clean-up.                              */
 /**********************************************************************/
 void
-master_process (int p_id, int N_p, options_struct * opts)
+master_process (int N_p, options_struct *opts)
 {
-  double time_init, time_final, lambda, lambda_min, lambda_max,
-         h, h_min, h_max;
-  int lambda_index, tree_file_count, global_iter, max_global_iter;
-  bool has_failed, has_completed;
-
-  /* Setting convenient aliases for optional parameters */
-  lambda_min = opts->lambda_min;
-  lambda_max = opts->lambda_max;
-  lambda_index = opts->lambda_index;
-  h_min = opts->h_min;
-  h_max = opts->h_max;
-  max_global_iter = opts->max_global_iter;
+  PTnode *root = NULL;
+  double r_nrm;
+  int lambda_index = opts->lambda_index;
+  bool has_succeeded;
 
   /* First verification: meaningful tree depth must be larger than 1 */
   if (opts->max_depth<=1)
@@ -32,92 +24,56 @@ master_process (int p_id, int N_p, options_struct * opts)
     }
 
   /* Second verification: Allocate root_node successfully */
-  PTnode *root = NULL;
-  has_failed = (!create_root_node (&root, opts));
-  if (has_failed)
+  has_succeeded = create_root_node (&root, opts);
+  if (!has_succeeded)
     {
-      printf ("master_process: Failed to allocate memory for root node.\n");
+      printf ("master_process:");
+      printf (" Failed to allocate memory for root node.\n");
       printf ("Terminating...\n");
       goto cleanup;
     }
 
   /* Third verification: Load initial point from disk */
-  has_failed = (!load_initial_coordinates (root, opts));
-  if (has_failed)
+  has_succeeded = load_initial_coordinates (root, opts);
+  if (!has_succeeded)
     {
-      printf ("master_process: Failed to read first point into root node.\n");
+      printf ("master_process:");
+      printf (" Failed to read first point into root node.\n");
       printf ("Terminating...\n");
       goto cleanup;
     }
 
-  lambda = root->z[lambda_index];
   if (opts->verbose>0)
   {
     printf ("master_process: Loaded first point from file.\n");
     compute_residual (root->N_dim, root->z, root->T_init);
-    print_PTnode (root);
-    double r_nrm = cblas_dnrm2 (root->N_dim, root->T_init, 1);
-    printf("Initial residual = %g\n", r_nrm);
-    printf("Initial lambda = %g\n", lambda);
+    r_nrm = cblas_dnrm2 (root->N_dim, root->T_init, 1);
+    printf ("Initial residual = %g\n", r_nrm);
+    printf ("Initial lambda = %g\n", root->z[lambda_index]);
   }
 
-  initialize_root_node (root, opts);
+  /* Fourth verification: Determine initial secant direction */
+  has_succeeded = initialize_secant (root, opts);
+  printf ("master_process: returned from initialize_secant...\n");
+  if (!has_succeeded)
+  {
+    printf ("master_process:");
+    printf (" Failed to determine initial secant direction.\n");
+    printf ("Maximum of %d iterations exceeded.\n", opts->max_iter);
+    printf ("Desired residual tolerance: %12.5e\n",opts->tol_residual);
+    printf ("Terminating.\n");
+    goto cleanup;
+  }
 
-  tree_file_count = 0;
-  global_iter = 0;
-  has_failed = false;
-  has_completed = (lambda <= lambda_min) || (lambda >= lambda_max);
-  if (opts->verbose>0)
-    printf ("master_process: beginning global iteration.\n");
-  time_init = MPI_Wtime ();
-
-  /* Macro to execute command and log image of tree if requested */
-#define LOG_TREE(comm,n) (comm);          \
-                     if (opts->verbose>n) \
-               visualize_tree (root, opts, tree_file_count++)
-  LOG_TREE(NULL,1); /* Log image of initial node if necessary */
-  while (!has_completed && !has_failed)
-    {
-      /* Spawn new nodes on tree at leaves if possible. */
-      construct_predictor_nodes (root, opts);
-      assign_processes (root, N_p);
-      LOG_TREE(assign_predictor_steps (root, opts),1);
-      compute_corrector_steps (root, N_p);
-      LOG_TREE(assess_residuals (root, opts),1);
-      LOG_TREE(prune_diverged_nodes (root, opts),1);
-      construct_viable_paths (root);
-      LOG_TREE(choose_viable_paths (root),1);
-      LOG_TREE(advance_root_node (&root, opts),1);
-      global_iter++;
-      lambda = root->z[lambda_index];
-      has_completed = (lambda <= lambda_min) || (lambda >= lambda_max);
-      h = root->h;
-      has_failed = (global_iter>max_global_iter) || (h<h_min);
-    }
-  time_final = MPI_Wtime ();
-  if  (opts->verbose>0)
-    {
-      if (has_completed)
-    {
-      printf ("master_process: completed main loop\n");
-      printf ("Time elapsed: %g\n", time_final - time_init);
-      printf ("Global_Iter = %d global iterations.\n", global_iter);
-      printf ("has_completed = %d, has_failed = %d\n", has_completed, has_failed);
-      printf ("lambda =%10g, lambda_min=%10g, lambda_max=%10g\n",
-          lambda, lambda_min, lambda_max);
-      printf ("h = %10g, h_min = %10g, h_max = %10g\n",h,h_min,h_max);
-    }
-      else
-    printf ("Premature termination:has_completed = %d, has_failed = %d\n",
-        has_completed, has_failed);
-    }
+  principal_pampac_loop (N_p, root, opts);
   write_root_coordinates (root, opts);
+
   cleanup:
     if (opts->verbose>0)
-      printf("master_process: Shutting down slave processes.");
+      printf("master_process: Shutting down slave processes.\n");
     stop_slaves(N_p);
     if (opts->verbose>0)
-      printf("master_process: Cleaning up memory allocated for tree.");
+      printf("master_process: Cleaning up memory allocated for tree.\n");
     free (root->z_init);
     root->z_init = NULL;
     delete_tree (root);

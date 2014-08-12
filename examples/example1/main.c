@@ -33,7 +33,7 @@ main (int argc, char *argv[])
       opts.base_name_tree = argv[4];
       /* Initialisation */
       setup_teardown(N_dim);
-      master_process (p_id, N_p, &opts);
+      master_process (N_p, &opts);
       setup_teardown(N_dim); /* Clean-up */
       printf("PID %d: Cleaning up master process.\n", p_id);
       fflush(stdout);
