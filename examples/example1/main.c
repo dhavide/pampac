@@ -9,12 +9,13 @@ int
 main (int argc, char *argv[]) {
   int p_id;         /* rank of process */
   int N_p;          /* number of processes */
-  int N_dim;                    /* number of variables */
+  int N_dim;        /* number of variables */
 
   /* Global variable Aval declared in KS_example.h; clumsy, but this
      allows it to be set in one place for use by both functions
      compute_residual and single_corrector_step. */
   Aval = -8.089150779042718; /* for N=2048 test case */
+
   /* Aval = -9.135914993072223;  for N=1024 test case */
 
   MPI_Init (&argc, &argv);               /* start up MPI */
@@ -25,19 +26,22 @@ main (int argc, char *argv[]) {
     opts = parse_options (argc, argv);
     N_dim = opts.N_dim;
     MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
-    /* Initialisation */
-    setup_teardown(N_dim);
+
+    setup_globals (N_dim); /* Initialisation */
     master_process (N_p, &opts);
-    setup_teardown(N_dim); /* Clean-up */
+    teardown_globals ();   /* Clean-up */
+
     printf("PID %d: Cleaning up master process.\n", p_id);
     fflush(stdout);
     MPI_Barrier (MPI_COMM_WORLD);
   } else {
     /* N_dim is read from disk by master and broadcast to slaves */
     MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
-    setup_teardown(N_dim); /* Initialisation */
+
+    setup_globals (N_dim); /* Initialisation */
     slave_process (N_dim);
-    setup_teardown(N_dim); /* Clean-up */
+    teardown_globals ();   /* Clean-up */
+
     printf("PID %d: Cleaning up slave process.\n", p_id);
     fflush(stdout);
     MPI_Barrier (MPI_COMM_WORLD);
