@@ -1,5 +1,3 @@
-#include <stdbool.h>
-#include <clapack.h>
 #include "KS_example.h"
 void
 single_corrector_step (int N_real, double *Z, double *T)
@@ -63,7 +61,7 @@ single_corrector_step (int N_real, double *Z, double *T)
   fftw_complex c, nu;
   /* N_real = number of REAL variables input */
 
-  N_grid = (N_real / 2) - 2;	// Number of collocation points
+  N_grid = (N_real / 2) - 2;    // Number of collocation points
   /*
      Receiving a NULL pointer for Z or T initiates prelimary set up or
      final clean up. Static memory is allocated for intermediate work and

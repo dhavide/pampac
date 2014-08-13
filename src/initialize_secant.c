@@ -47,7 +47,7 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     }
     single_corrector_step (N_dim, root->z_init, root->T_init);
     compute_residual (N_dim, root->z_init, residual);
-    r_nrm = cblas_dnrm2 (N_dim, residual, 1);
+    r_nrm = cblas_dnrm2 (N_dim-1, residual, 1);
     if (opts->verbose>1) {
       printf("initialize_secant: count=%3d,", count);
       printf(" residual norm=%12.5g.\n", r_nrm);

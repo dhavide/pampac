@@ -19,10 +19,10 @@ INCPATHS = -I/home/dhavide/repositories/pampac/src
 
 FFTW  = -lfftw3
 MATH       = -lm
-LAPACK     = /usr/lib/atlas-base/liblapack_atlas.so.3 /usr/lib/libcblas.so.3
-BLAS       = -lgsl -lgslcblas
+LAPACK     = /usr/lib/atlas-base/liblapack_atlas.so.3
+BLAS       = /usr/lib/atlas-base/libcblas.so.3
 PAMPAC     = -lpampac
-LIBS       = ${LAPACK} ${PAMPAC} ${FFTW}  ${BLAS} ${MATH}
+LIBS       = ${LAPACK} ${PAMPAC} ${FFTW} ${BLAS} ${MATH}
 INCPATHS += -I /usr/include/atlas
 ################################################################################
 # Rules

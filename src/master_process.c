@@ -9,7 +9,7 @@
 void
 master_process (int N_p, options_struct *opts) {
   PTnode *root = NULL;
-  double r_nrm;
+  double res_nrm;
   int lambda_index = opts->lambda_index;
   bool has_succeeded;
 
@@ -42,8 +42,9 @@ master_process (int N_p, options_struct *opts) {
   if (opts->verbose>0) {
     printf ("master_process: Loaded first point from file.\n");
     compute_residual (root->N_dim, root->z, root->T_init);
-    r_nrm = cblas_dnrm2 (root->N_dim, root->T_init, 1);
-    printf ("Initial residual = %12.5g\n", r_nrm);
+    res_nrm = cblas_dnrm2 (root->N_dim-1, root->T_init, 1);
+    printf ("master_process: Initial residual = %12.5g\n", res_nrm);
+    printf ("master_process: ");
     printf ("Initial lambda = %12.5g\n", root->z[lambda_index]);
   }
 

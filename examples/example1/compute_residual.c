@@ -1,5 +1,4 @@
 #include "KS_example.h"
-#include <stdbool.h>
 /******************************************************************************/
 
 void
@@ -97,7 +96,7 @@ compute_residual (int N_real, const double *Z, double *Res)
   fftw_complex c, nu;
 
   /* N_real = number of REAL variables input */
-  N_grid = (N_real / 2) - 2;	/* Number of collocation points */
+  N_grid = (N_real / 2) - 2;    /* Number of collocation points */
   /*
      A NULL pointer for the input array Res initiates prelimary set up or
      final clean up. Static memory is allocated for intermediate work and
@@ -172,10 +171,10 @@ compute_residual (int N_real, const double *Z, double *Res)
   fftw_execute_dft (plan_ifft, DX_cplx, DX_cplx);
 
   for (k = 0; k < N_grid; k++) {
-    X_cplx[k] /= N_grid;	/* Rescale: FFTW's "ifft" is scaled by N_grid */
-    DX_cplx[k] /= N_grid;	/* Rescale: FFTW's "ifft" is scaled by N_grid */
-    DX_cplx[k] *= X_cplx[k];	/* Same as DX_cplx = ifft(DX_cplx) .* ifft(X_cplx) */
-    X_cplx[k] = csin (X_cplx[k]);	/* Same as X_cplx = sin( ifft(X_cplx) ) */
+    X_cplx[k] /= N_grid;    /* Rescale: FFTW's "ifft" is scaled by N_grid */
+    DX_cplx[k] /= N_grid;   /* Rescale: FFTW's "ifft" is scaled by N_grid */
+    DX_cplx[k] *= X_cplx[k];    /* Same as DX_cplx = ifft(DX_cplx) .* ifft(X_cplx) */
+    X_cplx[k] = csin (X_cplx[k]);   /* Same as X_cplx = sin( ifft(X_cplx) ) */
   }
 
   /* Equivalent to X_cplx = fft(X_cplx) in Matlab */
