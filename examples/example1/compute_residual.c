@@ -16,7 +16,7 @@ compute_residual (int N_real, const double *Z, double *Resdl)
 /* coefficients X_k. That is, the collocation points are taken to be  */
 /* \xi_\ell=2\pi\ell/N_{grid}. The resulting nonlinear vector field   */
 /* can be evaluated efficiently using discrete Fourier transforms     */
-/* (hence the use of the FFTW library).                               */
+/* (hence the use of complex FFTs from the GSL library).              */
 /*                                                                    */
 /* This BVP arises in seeking travelling wave solutions of the form   */
 /* \psi(x-ct)for the time-dependent PDE                               */
@@ -54,7 +54,7 @@ compute_residual (int N_real, const double *Z, double *Resdl)
 /**********************************************************************/
 {
   int N_grid, k;
-  fftw_complex c, nu;
+  complex c, nu;
   /* N_real = number of REAL variables input    */
   /* N_grid = number of collocation points used */
   N_grid = (N_real / 2) - 2;
@@ -63,22 +63,19 @@ compute_residual (int N_real, const double *Z, double *Resdl)
   /* Accumulate linear terms first */
   for (k = 0; k < N_grid; k++) {
     X_cplx[k] = Z[2*k] + 1.0I * Z[2*k + 1];
-    RHS_cplx[k] = Dmatrix2   [k] + nu * Dmatrix4[k];
+    RHS_cplx[k] = Dmatrix2[k] + nu * Dmatrix4[k];
     RHS_cplx[k] *= X_cplx[k];
     DX_cplx[k] = Dmatrix[k] * X_cplx[k];
     RHS_cplx[k] -= c * DX_cplx[k];
   }
 
   /* Now use DFTs to compute nonlinear terms of function. */
-  /* Equivalent to X_cplx = N_grid * ifft(X_cplx) in Matlab... */
-  fftw_execute_dft (plan_ifft, X_cplx, X_cplx);
-  /* Equivalent to DX_cplx = N_grid * ifft(DX_cplx) in Matlab... */
-  fftw_execute_dft (plan_ifft, DX_cplx, DX_cplx);
+  /* Equivalent to X_cplx = ifft(X_cplx) in Matlab... */
+  fft_wrapper (false, N_grid, X_cplx);
+  /* Equivalent to DX_cplx = ifft(DX_cplx) in Matlab... */
+  fft_wrapper (false, N_grid, DX_cplx);
 
   for (k = 0; k < N_grid; k++) {
-    /* Rescale: FFTW's "ifft" is scaled by N_grid */
-    X_cplx[k] /= N_grid;
-    DX_cplx[k] /= N_grid;
     /* Equivalent to DX_cplx = ifft(DX_cplx) .* ifft(X_cplx) */
     DX_cplx[k] *= X_cplx[k];
     /* Equivalent to X_cplx = sin( ifft(X_cplx) ) */
@@ -86,9 +83,9 @@ compute_residual (int N_real, const double *Z, double *Resdl)
   }
 
   /* Equivalent to X_cplx = fft(X_cplx) in Matlab */
-  fftw_execute_dft (plan_fft, X_cplx, X_cplx);
+  fft_wrapper (true, N_grid, X_cplx);
   /* Equivalent to DX_cplx = fft(DX_cplx) in Matlab */
-  fftw_execute_dft (plan_fft, DX_cplx, DX_cplx);
+  fft_wrapper (true, N_grid, DX_cplx);
 
   /* Finally, accumulate nonlinear terms into residual vector & unpack
      real/imaginary components into vector Resdl of *doubles*. */

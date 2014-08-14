@@ -5,45 +5,46 @@ void setup_globals(int N_dim) {
   /* N_grid = number of collocation points  */
   int N_grid = (N_dim / 2) - 2;
   /* Setting up static arrays and data structures */
-  Dmatrix = fftw_alloc_complex (N_grid);
-  Dmatrix2 = fftw_alloc_real (N_grid);
-  Dmatrix4 = fftw_alloc_real (N_grid);
+  Dmatrix = malloc (N_grid * sizeof (*Dmatrix));
+  Dmatrix2 = malloc (N_grid * sizeof (*Dmatrix2));
+  Dmatrix4 = malloc (N_grid * sizeof (*Dmatrix4));
   set_differentiation_matrices (N_grid);
-  Res = fftw_alloc_real (N_dim-1);
-  X_cplx = fftw_alloc_complex (N_grid);
-  DX_cplx = fftw_alloc_complex (N_grid);
-  Jac_cplx = fftw_alloc_complex (pow(N_grid+2,2));
-  RHS_cplx = fftw_alloc_complex (N_grid+2);
+  
+  real_workspace = malloc (N_dim * sizeof (*real_workspace));
+  X_cplx = malloc (N_grid * sizeof (*X_cplx));
+  DX_cplx = malloc (N_grid * sizeof (*DX_cplx));
+  Jac_cplx = malloc (pow(N_grid+2,2) * sizeof (*Jac_cplx));
+  RHS_cplx = malloc ((N_grid+2) * sizeof (*RHS_cplx));
   ipiv = malloc ((N_grid+2) * sizeof(*ipiv));
-  plan_fft = fftw_plan_dft_1d (N_grid, X_cplx, X_cplx,
-                               FFTW_FORWARD, FFTW_MEASURE);
-  plan_ifft = fftw_plan_dft_1d (N_grid, X_cplx, X_cplx,
-                                FFTW_BACKWARD, FFTW_MEASURE);
+  /* Structures here required for complex FFT in GSL */
+  wavetable = gsl_fft_complex_wavetable_alloc (N_grid);
+  workspace = gsl_fft_complex_workspace_alloc (N_grid);
   return;
 }
 /**********************************************************************/
 void teardown_globals() {
   /* Cleaning up static arrays and data structures */
-  fftw_free (Dmatrix);
+  free (Dmatrix);
   Dmatrix = NULL;
-  fftw_free (Dmatrix2);
+  free (Dmatrix2);
   Dmatrix2 = NULL;
-  fftw_free (Dmatrix4);
+  free (Dmatrix4);
   Dmatrix4 = NULL;
-  fftw_free (Res);
-  Res = NULL;
-  fftw_free (X_cplx);
+  free (real_workspace);
+  real_workspace = NULL;
+  free (X_cplx);
   X_cplx = NULL;
-  fftw_free (DX_cplx);
+  free (DX_cplx);
   DX_cplx = NULL;
-  fftw_free (Jac_cplx);
+  free (Jac_cplx);
   Jac_cplx = NULL;
-  fftw_free (RHS_cplx);
+  free (RHS_cplx);
   RHS_cplx = NULL;
   free (ipiv);
   ipiv = NULL;
-  fftw_destroy_plan (plan_fft);
-  fftw_destroy_plan (plan_ifft);
+  /* Data structures required for complex FFT in GSL */
+  gsl_fft_complex_wavetable_free (wavetable);
+  gsl_fft_complex_workspace_free (workspace);
   return;
 }
 /**********************************************************************/
@@ -77,8 +78,7 @@ set_differentiation_matrices (int N_grid)
   return;
 }
 /**********************************************************************/
-void compute_Jacobian (int N_dim, fftw_complex c,
-                         fftw_complex nu, double * T) {
+void compute_Jacobian (int N_dim, complex c, complex nu, double * T) {
   int N_grid, k, ell, index;
   /* N_dim = number of REAL variables input */
   /* N_grid = number of collocation points  */
@@ -117,30 +117,27 @@ void compute_Jacobian (int N_dim, fftw_complex c,
   /* Accumulate advective terms in Jacobian matrix */
   for (k=0; k<=N_grid-1; k++)
     for (ell=0; ell<=k; ell++) {
-        index = k + (N_grid+2) * ell;
+      index = k + (N_grid+2) * ell;
       Jac_cplx[index] += Dmatrix[k-ell] * X_cplx[k-ell] / N_grid;
       Jac_cplx[index] += Dmatrix[ell] * X_cplx[k-ell] / N_grid;
     }
 
   for (k=0; k<=N_grid-2; k++)
     for (ell=k+1; ell<=N_grid-1; ell++) {
-        index = k + (N_grid+2) * ell;
+      index = k + (N_grid+2) * ell;
       Jac_cplx[index] += Dmatrix[k-ell+N_grid] *
-                          X_cplx[k-ell+N_grid] / N_grid;
+                         X_cplx[k-ell+N_grid] / N_grid;
       Jac_cplx[index] += Dmatrix[ell] * X_cplx[k-ell+N_grid] / N_grid;
     }
 
   /* Use DFTs to compute nonlinear terms of function. */
-  /* Equivalent to X_cplx = N_grid * ifft(X_cplx) in Matlab... */
-  fftw_execute_dft (plan_ifft, X_cplx, X_cplx);
-  for (k=0; k<N_grid; k++) {
-    /* Rescale: FFTW's "ifft" is scaled by N_grid */
-    X_cplx[k] /= N_grid;
-    /* Same as "X_cplx = Aval*cos(ifft(X_cplx))" in Matlab */
+  /* Equivalent to "X_cplx = Aval*cos(ifft(X_cplx))" in Matlab... */
+  fft_wrapper (false, N_grid, X_cplx);
+  for (k=0; k<N_grid; k++)
     X_cplx[k] = Aval*ccos( X_cplx[k] );
-  }
+
   /* Equivalent to X_cplx = fft(X_cplx) in Matlab... */
-  fftw_execute_dft (plan_fft, X_cplx, X_cplx);
+  fft_wrapper (true, N_grid, X_cplx);
 
   /* Accumulate nonlinear trigonometric derivative terms in Jacobian matrix */
   for (k=0; k<=N_grid-1; k++)
@@ -150,5 +147,22 @@ void compute_Jacobian (int N_dim, fftw_complex c,
   for (k=0; k<=N_grid-2; k++)
     for (ell=k+1; ell<=N_grid-1; ell++)
       Jac_cplx[k+(N_grid+2)*ell] += X_cplx[k-ell+N_grid] / N_grid;
-return;
+  return;
+}
+/**********************************************************************/
+void fft_wrapper (bool forward, int N, complex * Y) {
+  int k;
+  /* Unwrap array of complex values into array of doubles */
+  for (k=0; k<N; k++) {
+    real_workspace[2*k]   = creal (Y[k]);
+    real_workspace[2*k+1] = cimag (Y[k]);
+  }
+  if (forward)
+    gsl_fft_complex_forward (real_workspace, 1, N, wavetable, workspace);
+  else
+    gsl_fft_complex_inverse (real_workspace, 1, N, wavetable, workspace);
+  /* Repack computed double values into complex array */
+  for (k=0; k<N; k++)
+    Y[k] = real_workspace[2*k] + 1.0I*real_workspace[2*k+1];
+  return;
 }

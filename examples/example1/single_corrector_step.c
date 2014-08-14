@@ -13,7 +13,7 @@ single_corrector_step (int N_real, double *Z, double *T)
 /* coefficients X_k. That is, the collocation points are taken to be  */
 /* \xi_\ell=2\pi\ell/N_{grid}. The resulting nonlinear vector field   */
 /* can be evaluated efficiently using discrete Fourier transforms     */
-/* (hence the use of the FFTW library).                               */
+/* (hence the use of complex FFTs from the GSL library).              */
 /*                                                                    */
 /* This BVP arises in seeking travelling wave solutions of the form   */
 /* \psi(x-ct)for the time-dependent PDE                               */
@@ -51,7 +51,7 @@ single_corrector_step (int N_real, double *Z, double *T)
 /**********************************************************************/
 {
   int N_grid, k, info;
-  fftw_complex c, nu;
+  complex c, nu;
   /* N_real = number of REAL variables input    */
   /* N_grid = number of collocation points used */
   N_grid = (N_real / 2) - 2;
@@ -64,9 +64,9 @@ single_corrector_step (int N_real, double *Z, double *T)
   compute_Jacobian (N_real, c, nu, T);
 
   /* Compute the right-hand side and pack into a complex vector */
-  compute_residual ( N_real, Z, Res );
+  compute_residual ( N_real, Z, real_workspace );
   for (k=0; k<N_grid; k++)
-    RHS_cplx[k] = Res[2*k] + 1.0I * Res[2*k+1];
+    RHS_cplx[k] = real_workspace[2*k] + 1.0I * real_workspace[2*k+1];
   RHS_cplx[N_grid] = 0.0;
   RHS_cplx[N_grid+1] = 0.0;
 
