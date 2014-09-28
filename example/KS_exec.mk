@@ -8,14 +8,15 @@ INPUTFILE := ${DATADIR}/input.txt_2048
 OUTPUTFILE := ${DATADIR}/output.txt
 
 #
-TGT_PREREQS := example/KS-example
+TARGET := ${OUTPUTFILE}
+TGT_PREREQS := example/KS_example
 TGT_POSTMAKE := 
 TGT_POSTCLEAN := rm -f ${OUTPUTFILE} ${DATADIR}/*.gv ${DATADIR}/*.svg
 GV_FILES := $(wildcard ${DATADIR}/*.gv)
 SVG_FILES := $(GV_FILES:.gv=.svg)
 
-KS-exec: example/KS-example
-	${MPIEXEC} -n ${NPROC} example/KS-example ${PARAMETERFILE} ${INPUTFILE} ${OUTPUTFILE} ${DATADIR}/tree
+KS_exec: 
+	${MPIEXEC} -n ${NPROC} ${TGT_PREREQS} ${PARAMETERFILE} ${INPUTFILE} ${OUTPUTFILE} ${DATADIR}/tree
 
 %.svg : %.gv
 	dot -Tsvg $< -o $*.svg
