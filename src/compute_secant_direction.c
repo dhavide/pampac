@@ -1,4 +1,4 @@
-#include <gsl/gsl_cblas.h>
+#include <gsl_cblas.h>
 #include "pampac.h"
 /**********************************************************************/
 /* Computes normalised secant vector from two points on a curve.      */

@@ -1,4 +1,4 @@
-#include <gsl/gsl_cblas.h>
+#include <gsl_cblas.h>
 #include "pampac.h"
 bool initialize_secant (PTnode* root, options_struct *opts) {
   int count, k, N_dim;

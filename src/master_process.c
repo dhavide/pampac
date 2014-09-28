@@ -1,6 +1,6 @@
 #include "mpi.h"
 #include "pampac.h"
-#include <gsl/gsl_cblas.h>
+#include <gsl_cblas.h>
 /**********************************************************************/
 /* Main routine executed by master processor. The bulk of the work is */
 /* in the routine principal_pampac_loop; the remaining code is        */

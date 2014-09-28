@@ -50,7 +50,7 @@ single_corrector_step (int N_real, double *Z, double *T)
 /* invoking this function.                                            */
 /**********************************************************************/
 {
-  int N_grid, k, info;
+  lapack_int N_grid, k, info;
   complex c, nu;
   /* N_real = number of REAL variables input    */
   /* N_grid = number of collocation points used */
@@ -71,9 +71,10 @@ single_corrector_step (int N_real, double *Z, double *T)
   RHS_cplx[N_grid+1] = 0.0;
 
   /* Solve linear system Jac_cplx*X=RHS_cplx; solution overwrites RHS_cplx */
-  info = clapack_zgesv( CblasColMajor, N_grid+2, 1, Jac_cplx, N_grid+2,
-                        ipiv, RHS_cplx, N_grid+2);
-  if (info  != 0) fprintf(stderr,"failure with error %d\n", info);
+  info = LAPACKE_zgesv( LAPACK_COL_MAJOR, N_grid+2, 1, Jac_cplx,
+                        N_grid+2, ipiv, RHS_cplx, N_grid+2 );
+  if (info  != 0)
+     fprintf(stderr,"ZGESV: failure with error %d\n", info);
 
   /* Filter out the part of the Newton update that
      gives complex-valued solutions or parameters

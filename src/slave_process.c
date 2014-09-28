@@ -1,4 +1,4 @@
-#include <gsl/gsl_cblas.h>
+#include <gsl_cblas.h>
 #include <mpi.h>
 #include "pampac.h"
 /**********************************************************************/
