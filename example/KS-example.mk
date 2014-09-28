@@ -5,7 +5,7 @@ SOURCES := \
    main.c \
    single_corrector_step.c
 SRC_INCDIRS := ../src
-TGT_PREREQS := libpampac.a
+TGT_PREREQS := lib/libpampac.a
 SUBMAKEFILES = KS-exec.mk
 
 # Modify these variables as appropriate for your system.
