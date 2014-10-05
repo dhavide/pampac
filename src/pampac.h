@@ -1,9 +1,7 @@
-#define STRING_LEN 50
-#define MAX_CHILDREN 20
 #define EXIT_TAG 202
 #define CONTINUE_TAG 201
 #ifndef max
-   #define max( a, b ) (((a)>(b)) ? (a) : (b))
+#define max( a, b ) (((a)>(b)) ? (a) : (b))
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,8 +10,7 @@
 /**********************************************************************/
 /* Required for extracting required algorithm parameters from a file  */
 /**********************************************************************/
-typedef struct options_struct
-{
+typedef struct options_struct {
   int N_dim;                /* dimensions of problem                  */
   double lambda_min;        /* lower continuation parameter value     */
   double lambda_max;        /* upper continuation parameter value     */
@@ -54,8 +51,7 @@ typedef enum
 /* Computations run concurrently on distinct processors represented   */
 /* using PTnode data structure (nodes on a rooted tree)               */
 /**********************************************************************/
-typedef struct PTnode
-{
+typedef struct PTnode {
   int N_dim;
   int label;
   int pid;
@@ -83,12 +79,12 @@ typedef struct PTnode
 /* Queue data structure of PTnodes to allow breadth-first traversal   */
 /**********************************************************************/
 typedef struct QueueElement {
-   struct PTnode *value;
-   struct QueueElement *next;
+  struct PTnode *value;
+  struct QueueElement *next;
 } QueueElement;
 typedef struct Queue {
-   struct QueueElement* head;
-   struct QueueElement* tail;
+  struct QueueElement* head;
+  struct QueueElement* tail;
 } Queue;
 /**********************************************************************/
 
@@ -103,7 +99,6 @@ extern bool assign_options (char*, char*, options_struct*);
 extern void initialize_options (options_struct*);
 extern bool validate_options (options_struct*);
 
-
 extern bool load_initial_coordinates (PTnode*, options_struct*);
 extern bool create_root_node (PTnode**, options_struct*);
 extern bool initialize_secant (PTnode*, options_struct*);
@@ -113,7 +108,7 @@ extern void construct_predictor_nodes (PTnode*, options_struct*);
 extern void construct_viable_paths (PTnode*);
 extern void choose_viable_paths (PTnode*);
 extern void principal_pampac_loop (int, PTnode*, options_struct*);
-extern void write_root_coordinates (PTnode*, options_struct*);
+extern bool write_root_coordinates (PTnode*, options_struct*);
 
 /* These functions deal with the PTnode data structure */
 extern PTnode* init_PTnode (int);
@@ -145,4 +140,4 @@ extern int empty_queue (Queue*);
 /**********************************************************************/
 extern void compute_residual (int, const double*, double*);
 extern void single_corrector_step (int, double*, double*);
-
+extern bool write_coordinates (int, double*);

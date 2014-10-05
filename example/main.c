@@ -20,7 +20,6 @@ main (int argc, char *argv[]) {
   /* Aval = -9.135914993072223;  for N=1024 test case */
 
   N_dim = 2*(N_grid+2);
-  printf("Calling MPI_INIT...\n");
   MPI_Init (NULL, NULL);               /* start up MPI */
   MPI_Comm_rank (MPI_COMM_WORLD, &p_id); /* find process ID */
   MPI_Comm_size (MPI_COMM_WORLD, &N_p);  /* find # of processes */

@@ -12,6 +12,7 @@ assess_residuals (PTnode * node, options_struct * opts) {
   double residual_old, TOL, GAMMA, MU;
   bool has_failed, has_converged, has_almost_converged;
   MPI_Status status;
+
   TOL = opts->tol_residual;
   GAMMA = opts->gamma;
   MU = opts->mu;
@@ -24,6 +25,7 @@ assess_residuals (PTnode * node, options_struct * opts) {
     return;
 
   residual_old = node->res_norm; /* For measuring progress later */
+
   /* Corresponding MPI_Send calls in slave_process.
      Note: if node->pid==MPI_PROC_NULL, MPI_Recv will not hang. */
 
@@ -33,6 +35,9 @@ assess_residuals (PTnode * node, options_struct * opts) {
   MPI_Get_count (&status, MPI_DOUBLE, &n_received);
   if (n_received==node->N_dim)
     node->nu++;
+  else
+    printf ("assess_residuals: n_received = %d != %d = node->N_dim\n",
+            n_received, node->N_dim);
   MPI_Recv (&(node->res_norm), 1, MPI_DOUBLE, node->pid,
             CONTINUE_TAG, MPI_COMM_WORLD, &status);
 
@@ -53,7 +58,8 @@ assess_residuals (PTnode * node, options_struct * opts) {
   else if (has_almost_converged)
     node->color = YELLOW;
   if (opts->verbose>0) {
-    printf ("Pre/Post-residual=%10.4e/%-10.4e, nu=%d, h=%5g, color=",
+    printf ("assess_residuals: Residual=");
+    printf ("%7.1e/%-7.1e, nu=%d, h=%7.1e, color=",
             residual_old, node->res_norm, node->nu, node->h);
     print_color(node,stdout);
     printf("\n");

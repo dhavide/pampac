@@ -1,3 +1,4 @@
+#include <string.h>
 #include "pampac.h"
 /**********************************************************************/
 /* This routine traverses a tree of PTnodes, generating output in the */
@@ -5,21 +6,39 @@
 /**********************************************************************/
 void
 visualize_tree (PTnode *root, options_struct *opts) {
-  int k;
+  int k, n_chars;
   Queue q;
   PTnode *alpha, *beta;
-  char filename[STRING_LEN];
+  char *filename;
   FILE *out_file;
-  /* Location of the output file determined by parameters in the data
-   * structure opts. */
+
+  printf ("visualize_tree: entering...\n");
+
+  /* Parameter tree_filename_num is negative when a previously
+   * attempted file-write failed (in which case, don't do more). */
+  if (opts->tree_filename_num<0)
+    return;
+
+  /* Extract location of base output filename from opts */
+  n_chars = strlen (opts->tree_base_filename) + 5 + 4;
+  filename = malloc (n_chars * sizeof (char));
+  /* Note: n_chars accounts for 5 chars for numeric field & 4 chars
+   * for the additional characters "-" and ".gv". If the "%5d" is
+   * modified in the next line, n_chars should be modified also.   */
   sprintf (filename, "%s-%05d.gv",
            opts->tree_base_filename, opts->tree_filename_num);
   out_file = fopen (filename, "w");
+
+  free (filename); /* Must free before test that follows... */
+
   if (out_file == NULL) {
-    printf ("Error Opening %s.\n", filename);
-    exit (1);
+    printf ("visualize_tree: Warning, error opening %s.\n", filename);
+    /* Set signal to abort future calls to visualize_tree */
+    opts->tree_filename_num = -1;
+    return;
   }
-  /* Start printing information to dot file */
+
+  /* Start writing information to dot file */
   fprintf (out_file, "digraph G {\n");
   fprintf (out_file,
            "node [shape=circle,style=filled,fontcolor=black];\n");

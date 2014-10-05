@@ -16,8 +16,9 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
   h = root->h;
   max_global_iter = opts->max_global_iter;
   if (opts->verbose > 0) {
-    printf ("principal_pampac_loop: h=%12.5g, h_min=%12.5g\n", h, h_min);
-    printf ("Maximum global iterations=%d\n", max_global_iter);
+    printf ("principal_pampac_loop: h=%7.1e, h_min=%7.1e\n", h, h_min);
+    printf ("principal_pampac_loop: Maximum global iterations=%d\n",
+            max_global_iter);
   }
 
   global_iter = 0;
@@ -36,32 +37,58 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
     if (has_failed) {
       printf ("principal_pampac_loop:");
       printf (" Failed to attain goal\n");
-      printf ("global iterations=%d, h=%10.5g\n",
-                      global_iter, h);
+      printf ("global iterations=%d, h=%10.5g\n", global_iter, h);
       break;
     }
     /* Spawn new nodes on tree at leaves if possible. */
     construct_predictor_nodes (root, opts);
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Constructed predictor nodes...\n");
     assign_processes (root, N_p);
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Assigned processes...\n");
     assign_predictor_steps (root, opts);
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Assigned predictor steps...\n");
     if (opts->verbose > 2)
       visualize_tree (root, opts);
 
     compute_corrector_steps (root, N_p);
+
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Computing (concurrent) corrector steps...\n");
+
     assess_residuals (root, opts);
+
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Assessed residuals...\n");
+
     if (opts->verbose > 2)
       visualize_tree (root, opts);
 
     prune_diverged_nodes (root, opts);
+
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Pruned diverged nodes...\n");
+
     if (opts->verbose > 2)
       visualize_tree (root, opts);
 
     construct_viable_paths (root);
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Constructed viable paths...\n");
+
     choose_viable_paths (root);
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Choose viable paths...\n");
+
     if (opts->verbose > 2)
       visualize_tree (root, opts);
 
     advance_root_node (&root, opts);
+    if (opts->verbose > 3)
+      printf ("principal_pampac_loop: Advanced root node...\n");
+
     if (opts->verbose > 2)
       visualize_tree (root, opts);
 

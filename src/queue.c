@@ -14,7 +14,7 @@ void init_queue (Queue *q) {
 void enqueue (Queue *q, PTnode *_value) {
   //allocate a new QueueElement for _value
   QueueElement *newElement;
-  newElement = (QueueElement*) malloc(sizeof(QueueElement));
+  newElement = (QueueElement*) malloc (sizeof (QueueElement));
   newElement->value = _value;
   newElement->next = NULL;
   if (q->head == NULL) {
