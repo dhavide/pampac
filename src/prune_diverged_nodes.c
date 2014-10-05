@@ -30,7 +30,7 @@ prune_diverged_nodes (PTnode *alpha, options_struct *opts) {
     double c_min = INFINITY;
     double c_max = -c_min;
     for (k = 0; k < alpha->max_children; k++) {
-      double c = opts->scale_process[k];
+      double c = opts->scale_factors[k];
       c_min = (c<=c_min)? c : c_min;
       c_max = (c>=c_max)? c : c_max;
     }

@@ -5,10 +5,10 @@
 bool
 load_initial_coordinates (PTnode* node, options_struct* opts) {
   int N = opts->N_dim, k = 0;
-  char *file_name = opts->input_file_name;
+  char *filename = opts->input_filename;
   double *z = node->z;
   FILE *input_file;
-  input_file = fopen (file_name, "r");
+  input_file = fopen (filename, "r");
   if (input_file == NULL) {
     printf ("load_initial_coordinates: Error Opening File.\n");
     return (false);

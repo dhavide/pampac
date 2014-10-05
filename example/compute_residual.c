@@ -68,7 +68,6 @@ compute_residual (int N_real, const double *Z, double *Resdl)
     DX_cplx[k] = Dmatrix[k] * X_cplx[k];
     RHS_cplx[k] -= c * DX_cplx[k];
   }
-
   /* Now use DFTs to compute nonlinear terms of function. */
   /* Equivalent to X_cplx = ifft(X_cplx) in Matlab... */
   fft_wrapper (false, N_grid, X_cplx);

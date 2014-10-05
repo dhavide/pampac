@@ -4,8 +4,8 @@ MPIEXEC := /usr/bin/mpiexec
 NPROC ?= 4
 DATADIR := example/data
 PARAMETERFILE := example/parameters.txt
-INPUTFILE := ${DATADIR}/input.txt_2048
-OUTPUTFILE := ${DATADIR}/output.txt
+#INPUTFILE := ${DATADIR}/input.txt_2048
+#OUTPUTFILE := ${DATADIR}/output.txt
 
 #
 TARGET := ${OUTPUTFILE}
@@ -16,7 +16,8 @@ GV_FILES := $(wildcard ${DATADIR}/*.gv)
 SVG_FILES := $(GV_FILES:.gv=.svg)
 
 KS_exec: 
-	${MPIEXEC} -n ${NPROC} ${TGT_PREREQS} ${PARAMETERFILE} ${INPUTFILE} ${OUTPUTFILE} ${DATADIR}/tree
+	${MPIEXEC} -n ${NPROC} ${TGT_PREREQS} ${PARAMETERFILE} 
+# ${INPUTFILE} ${OUTPUTFILE} ${DATADIR}/tree
 
 %.svg : %.gv
 	dot -Tsvg $< -o $*.svg

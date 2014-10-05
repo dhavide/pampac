@@ -7,7 +7,7 @@ SOURCES := \
 TGT_PREREQS := lib/libpampac.a
 TGT_POSTMAKE := mv KS_example example/KS_example
 TGT_POSTCLEAN := rm -f example/KS_example
-SUBMAKEFILES = KS_exec.mk
+#SUBMAKEFILES = KS_exec.mk
 
 # Modify these variables as appropriate for your system.
 SRC_INCDIRS := ../src /usr/include/atlas

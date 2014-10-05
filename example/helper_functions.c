@@ -17,7 +17,7 @@ void setup_globals(int N_dim) {
   RHS_cplx = malloc ((N_grid+2) * sizeof (*RHS_cplx));
   ipiv = malloc ((N_grid+2) * sizeof(*ipiv));
   /* Structures here required for complex FFT in GSL */
-  wavetable = gsl_fft_complex_wavetable_alloc (N_grid);
+    wavetable = gsl_fft_complex_wavetable_alloc (N_grid);
   workspace = gsl_fft_complex_workspace_alloc (N_grid);
   return;
 }

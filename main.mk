@@ -1,5 +1,5 @@
 #TARGET_DIR := lib
-SUBMAKEFILES := src/src.mk example/KS_example.mk
+SUBMAKEFILES := src/src.mk example/KS_example.mk example/KS_exec.mk
 
 # Parameters for users to configure on their systems:
 CC := /usr/bin/mpicc

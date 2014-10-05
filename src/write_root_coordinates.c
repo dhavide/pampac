@@ -6,7 +6,7 @@ void
 write_root_coordinates (PTnode *node, options_struct *opts) {
   int k;
   FILE *out_file;
-  out_file = fopen (opts->output_file_name, "a+");
+  out_file = fopen (opts->output_filename, "a+");
   if (out_file == NULL) {
     printf ("Error Opening File.\n");
     exit (1);

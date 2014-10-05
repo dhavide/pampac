@@ -26,7 +26,7 @@ construct_predictor_nodes (PTnode * alpha, options_struct * opts) {
     for (k = 0; k < alpha->max_children; k++) {
       has_data = (alpha->T_init != NULL) && (alpha->z != NULL) &&
                  (alpha->z_init != NULL);
-      double new_step = opts->scale_process[k] * (alpha->h);
+      double new_step = opts->scale_factors[k] * (alpha->h);
       bool is_too_long = (new_step > opts->h_max);
       /* Create at most one prediction with max step size. */
       if ((alpha->child[k] == NULL) && has_data &&

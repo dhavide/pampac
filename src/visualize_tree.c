@@ -8,15 +8,15 @@ visualize_tree (PTnode *root, options_struct *opts) {
   int k;
   Queue q;
   PTnode *alpha, *beta;
-  char file_name[STRING_LEN];
+  char filename[STRING_LEN];
   FILE *out_file;
   /* Location of the output file determined by parameters in the data
    * structure opts. */
-  sprintf (file_name, "%s-%05d.gv",
+  sprintf (filename, "%s-%05d.gv",
            opts->tree_base_filename, opts->tree_filename_num);
-  out_file = fopen (file_name, "w");
+  out_file = fopen (filename, "w");
   if (out_file == NULL) {
-    printf ("Error Opening %s.\n", file_name);
+    printf ("Error Opening %s.\n", filename);
     exit (1);
   }
   /* Start printing information to dot file */

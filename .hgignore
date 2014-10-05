@@ -1,5 +1,7 @@
 syntax: glob
+build/*
 *.o
 *.d
+*.P
 *.a
 *.*~

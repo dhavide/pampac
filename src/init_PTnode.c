@@ -12,7 +12,7 @@
 /* the function init_PTnode.                                          */
 /**********************************************************************/
 PTnode *
-init_PTnode ( int max_children) {
+init_PTnode (int max_children) {
   PTnode *alpha;
   int k;
   alpha = malloc (sizeof (*alpha));

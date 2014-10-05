@@ -14,11 +14,13 @@
 @param GAMMA 1.5
 
 @param MAX_DEPTH 3
-@param MAX_CHILDREN 2
 @param MAX_GLOBAL_ITER 6
 
-@param SCALE_PROCESS_0 0.5
-@param SCALE_PROCESS_1 2.0
-@param SCALE_PROCESS_2 1.0
+@param SCALE_FACTOR 0.5
+@param SCALE_FACTOR 2.0
+@param SCALE_FACTOR 1.0
 
 @param VERBOSE 3
+@param INPUT_FILENAME example/data/input.txt_1024
+@param OUTPUT_FILENAME example/data/output.txt
+@param TREE_BASE_FILENAME example/data/tree

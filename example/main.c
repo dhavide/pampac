@@ -9,26 +9,25 @@ int
 main (int argc, char *argv[]) {
   int p_id;         /* rank of process */
   int N_p;          /* number of processes */
-  int N_dim;        /* number of variables */
+  int N_grid;       /* number of grid points */
+  int N_dim;        /* Number of variables */
 
   /* Global variable Aval declared in KS_example.h; clumsy, but this
      allows it to be set in one place for use by both functions
      compute_residual and single_corrector_step. */
+  N_grid = 2048;
   Aval = -8.089150779042718; /* for N=2048 test case */
-
   /* Aval = -9.135914993072223;  for N=1024 test case */
 
-  MPI_Init (&argc, &argv);               /* start up MPI */
+  N_dim = 2*(N_grid+2);
+  printf("Calling MPI_INIT...\n");
+  MPI_Init (NULL, NULL);               /* start up MPI */
   MPI_Comm_rank (MPI_COMM_WORLD, &p_id); /* find process ID */
   MPI_Comm_size (MPI_COMM_WORLD, &N_p);  /* find # of processes */
   if (p_id == 0) {
-    options_struct opts;      /* problem/algorithm parameters */
-    opts = parse_options (argc, argv);
-    N_dim = opts.N_dim;
     MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
-
     setup_globals (N_dim); /* Initialisation */
-    master_process (N_p, &opts);
+    master_process (N_p, argc, argv);
     teardown_globals ();   /* Clean-up */
 
     printf("PID %d: Cleaning up master process.\n", p_id);
