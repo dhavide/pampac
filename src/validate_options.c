@@ -128,11 +128,6 @@ bool validate_options (options_struct *opts) {
     is_valid = false;
   }
 
-  if (opts->output_filename==NULL) {
-    printf("validate_options: OUTPUT_FILENAME not set\n");
-    is_valid = false;
-  }
-
   if ((opts->verbose>2) && (opts->tree_base_filename==NULL)) {
     printf("validate_options: TREE_BASE_FILENAME not set\n");
     is_valid = false;

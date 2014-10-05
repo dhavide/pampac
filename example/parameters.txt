@@ -22,5 +22,4 @@
 
 @param VERBOSE 1
 @param INPUT_FILENAME example/data/input.txt_2048
-@param OUTPUT_FILENAME example/data/output.txt
 @param TREE_BASE_FILENAME example/data/tree

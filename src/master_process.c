@@ -83,8 +83,6 @@ cleanup:
     printf("master_process: Cleaning up memory.\n");
   if (opts.input_filename!=NULL)
     free (opts.input_filename);
-  if (opts.output_filename!=NULL)
-    free (opts.output_filename);
   if (opts.scale_factors!=NULL)
     free (opts.scale_factors);
   if (root!=NULL) {

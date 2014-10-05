@@ -31,7 +31,6 @@ void initialize_options (options_struct *opts) {
 
   opts->verbose = 0;
   opts->input_filename = NULL;
-  opts->output_filename = NULL;
   opts->tree_base_filename = NULL;
   opts->tree_filename_num = 0;
   return;

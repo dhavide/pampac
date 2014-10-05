@@ -34,7 +34,6 @@ typedef struct options_struct {
 
   int verbose;              /* integer flag for controlling output    */
   char* input_filename;     /* parameter file from user               */
-  char* output_filename;    /* output file for user output            */
   char* tree_base_filename; /* used to name tree output files         */
   int tree_filename_num;    /* counter for tree dot files generated   */
 } options_struct;

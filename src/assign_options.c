@@ -24,7 +24,6 @@ assign_options (char *name, char* val, options_struct *opt) {
           OPT_VERBOSE,
           OPT_MAX_GLOBAL_ITER,
           OPT_INPUT_FILENAME,
-          OPT_OUTPUT_FILENAME,
           OPT_TREE_BASE_FILENAME,
           OPT_SCALE_FACTOR
         };
@@ -45,7 +44,6 @@ assign_options (char *name, char* val, options_struct *opt) {
     "VERBOSE",
     "MAX_GLOBAL_ITER",
     "INPUT_FILENAME",
-    "OUTPUT_FILENAME",
     "TREE_BASE_FILENAME",
     "SCALE_FACTOR",
   };
@@ -111,11 +109,6 @@ assign_options (char *name, char* val, options_struct *opt) {
     n_chars = strlen (val) + 1;
     opt->input_filename = malloc (n_chars * sizeof (char));
     memcpy (opt->input_filename, val, n_chars);
-    break;
-  case OPT_OUTPUT_FILENAME:
-    n_chars = strlen (val) + 1;
-    opt->output_filename = malloc (n_chars * sizeof (char));
-    memcpy (opt->output_filename, val, n_chars);
     break;
   case OPT_TREE_BASE_FILENAME:
     n_chars = strlen (val) + 1;
