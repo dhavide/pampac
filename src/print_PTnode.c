@@ -9,8 +9,8 @@ print_PTnode (PTnode *alpha) {
   printf ("max_children = %d\n", alpha->max_children);
   printf ("label = %d\n", alpha->label);
   printf ("pid = %d\n", alpha->pid);
-  printf ("color = ");
-  print_color (alpha,stdout);
+  printf ("state = ");
+  print_state (alpha,stdout);
   printf("\n");
   printf ("nu = %d\n", alpha->nu);
   printf ("nu_init = %d\n", alpha->nu_init);

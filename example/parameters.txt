@@ -20,6 +20,6 @@
 @param SCALE_FACTOR 2.0
 @param SCALE_FACTOR 1.0
 
-@param VERBOSE 1
+@param VERBOSE 3
 @param INPUT_FILENAME example/data/input.txt_2048
 @param TREE_BASE_FILENAME example/data/tree

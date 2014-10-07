@@ -20,7 +20,7 @@ init_PTnode (int max_children) {
   /* label is initialised with negative value */
   alpha->label = -1;
   alpha->pid = MPI_PROC_NULL;
-  alpha->color = RED;
+  alpha->state = PROGRESSING;
   alpha->nu = -1;
   alpha->nu_init = -1;
   alpha->nu_valid = -1;

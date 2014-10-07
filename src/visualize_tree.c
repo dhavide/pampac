@@ -41,7 +41,7 @@ visualize_tree (PTnode *root, options_struct *opts) {
   /* Start writing information to dot file */
   fprintf (out_file, "digraph G {\n");
   fprintf (out_file,
-           "node [shape=circle,style=filled,fontcolor=black];\n");
+           "node [shape=circle,style=filled,fontstate=black];\n");
   /* Breadth-first traversal of tree */
   init_queue (&q);
   enqueue (&q, root);
@@ -52,7 +52,22 @@ visualize_tree (PTnode *root, options_struct *opts) {
     /* Print node information about alpha into GraphViz file. */
     fprintf (out_file, "%d [label=\"%d\\nnu=%d \", color=",
              alpha->label,alpha->label,alpha->nu);
-    print_color (alpha, out_file);
+    switch (alpha->state) {
+    case FAILED:
+      fprintf (out_file, "BLACK");
+      break;
+    case CONVERGED:
+      fprintf (out_file, "GREEN");
+      break;
+    case CONVERGING:
+      fprintf (out_file, "YELLOW");
+      break;
+    case PROGRESSING:
+      fprintf (out_file, "RED");
+      break;
+    default:
+      break;
+    }
     fprintf (out_file, "];\n");
     /* Append children of alpha just dequeued (if any) to end of queue. */
     if (alpha->child != NULL) {

@@ -1,8 +1,8 @@
 #include "pampac.h"
 /**********************************************************************/
 /* This function recursively traverses the tree, computing lengths of */
-/* valid (containing all GREEN nodes) and viable (containing either   */
-/* GREEN or YELLOW nodes) paths to the leaves of the tree.            */
+/* valid (containing all CONVERGED nodes) and viable (containing either   */
+/* CONVERGED or CONVERGING nodes) paths to the leaves of the tree.            */
 /**********************************************************************/
 void
 construct_viable_paths (PTnode *alpha) {
@@ -12,8 +12,8 @@ construct_viable_paths (PTnode *alpha) {
   PTnode *beta;
 
   is_leaf = (count_children(alpha)==0);
-  is_valid = (alpha->color==GREEN);
-  is_viable = is_valid || (alpha->color==YELLOW);
+  is_valid = (alpha->state==CONVERGED);
+  is_viable = is_valid || (alpha->state==CONVERGING);
   /* Default values NaN/-1; algorithm overwrites as necessary. */
   alpha->valid_path_length = NAN;
   alpha->valid_index = -1;
@@ -42,9 +42,9 @@ construct_viable_paths (PTnode *alpha) {
       beta = alpha->child[k];
       if (beta!=NULL) {
         construct_viable_paths (beta);  // recursive call
-        is_child_valid = (beta->color==GREEN);
+        is_child_valid = (beta->state==CONVERGED);
         is_child_viable = is_child_valid ||
-                          (beta->color==YELLOW);
+                          (beta->state==CONVERGING);
         if (is_viable && is_child_viable) {
           length = beta->viable_path_length + alpha->h_init;
           /* Test below fails if either side is NaN. */

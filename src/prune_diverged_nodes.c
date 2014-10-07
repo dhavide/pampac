@@ -1,6 +1,6 @@
 #include "pampac.h"
 /**********************************************************************/
-/* This function recursively traverses the tree, deleting black nodes */
+/* This function recursively traverses the tree, deleting failed nodes */
 /* and any associated subtrees.                                       */
 /**********************************************************************/
 void
@@ -13,14 +13,14 @@ prune_diverged_nodes (PTnode *alpha, options_struct *opts) {
     PTnode* beta = alpha->child[k];
     if (beta != NULL) {
       all_children_NULL = false;
-      bool is_beta_black = (beta->color == BLACK);
-      if (is_beta_black) {
+      bool is_beta_failed = (beta->state == FAILED);
+      if (is_beta_failed) {
         delete_tree (beta);
         alpha->child[k] = NULL;
       } else
         prune_diverged_nodes (beta, opts);
       /* Track whether any children have not been pruned */
-      have_pruned_all_children &= is_beta_black;
+      have_pruned_all_children &= is_beta_failed;
     }
   }
   /* If all children were pruned, the parent's step-size h must be

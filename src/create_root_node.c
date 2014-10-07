@@ -15,7 +15,7 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
     printf("create_root_node: Setting fields of root node\n");
   root->N_dim = N_dim;
   root->depth = 0;
-  root->color = GREEN;
+  root->state = CONVERGED;
   root->nu = 0;
   root->h_init = NAN; /* This should not be used */
   root->h = opts->h_init;

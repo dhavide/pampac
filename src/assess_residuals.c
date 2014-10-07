@@ -3,7 +3,7 @@
 /**********************************************************************/
 /* This function traverses the tree, and, for each node in the tree,  */
 /* receives the residual as computed by one of the processors. The    */
-/* value received is used to assign colors to the nodes which is the  */
+/* value received is used to assign states to the nodes which is the  */
 /* basis of the decision-making algorithm for advancing on the curve. */
 /**********************************************************************/
 void
@@ -21,7 +21,7 @@ assess_residuals (PTnode * node, options_struct * opts) {
     if (node->child[k] != NULL)
       assess_residuals (node->child[k], opts); /* Recursive call */
 
-  if ((node->color==GREEN) || (node->pid<0))
+  if ((node->state==CONVERGED) || (node->pid<0))
     return;
 
   residual_old = node->res_norm; /* For measuring progress later */
@@ -41,27 +41,27 @@ assess_residuals (PTnode * node, options_struct * opts) {
   MPI_Recv (&(node->res_norm), 1, MPI_DOUBLE, node->pid,
             CONTINUE_TAG, MPI_COMM_WORLD, &status);
 
-  /* RED    -> keep computing corrector steps (default)
-     GREEN  -> converged; no more corrector steps needed
-     YELLOW -> almost converged; one more corrector step
-     BLACK  -> insufficient progress or diverged         */
+  /* PROGRESSING    -> keep computing corrector steps (default)
+     CONVERGED  -> converged; no more corrector steps needed
+     CONVERGING -> almost converged; one more corrector step
+     FAILED  -> insufficient progress or diverged         */
 
   has_failed = (node->nu > opts->max_iter) ||
                (log10(node->res_norm) > log10(MU) + log10(residual_old));
   has_converged = (node->res_norm < TOL);
   has_almost_converged = (GAMMA * log10 (node->res_norm) < log10 (TOL));
-  node->color = RED;
+  node->state = PROGRESSING;
   if (has_converged)
-    node->color = GREEN;
+    node->state = CONVERGED;
   else if (has_failed)
-    node->color = BLACK;
+    node->state = FAILED;
   else if (has_almost_converged)
-    node->color = YELLOW;
+    node->state = CONVERGING;
   if (opts->verbose>0) {
     printf ("assess_residuals: Residual=");
-    printf ("%7.1e/%-7.1e, nu=%d, h=%7.1e, color=",
+    printf ("%7.1e/%-7.1e, nu=%d, h=%7.1e, state=",
             residual_old, node->res_norm, node->nu, node->h);
-    print_color(node,stdout);
+    print_state (node, stdout);
     printf("\n");
   }
   return;

@@ -7,17 +7,17 @@
 void
 construct_predictor_nodes (PTnode * alpha, options_struct * opts) {
   int k;
-  bool is_max_depth, is_leaf_node, is_black, has_data;
+  bool is_max_depth, is_leaf_node, is_failed, has_data;
   PTnode *beta;
   /* Predictor steps are constructed only when:
-     - the node alpha is not BLACK
+     - the node alpha is not FAILED
      - the node alpha's depth is below prescribed maximum
      - the node alpha is a leaf node
    */
 
-  is_black = (alpha->color == BLACK);
+  is_failed = (alpha->state == FAILED);
   is_max_depth = (alpha->depth >= opts->max_depth - 1);
-  if (is_max_depth || is_black)
+  if (is_max_depth || is_failed)
     return;
   is_leaf_node = (count_children (alpha) == 0);
   if (is_leaf_node) {

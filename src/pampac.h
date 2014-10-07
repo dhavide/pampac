@@ -39,11 +39,11 @@ typedef struct options_struct {
 } options_struct;
 
 /**********************************************************************/
-/* Colors used for distinguishing convergence status of iterations    */
+/* States used for distinguishing convergence status of iterations    */
 /* running concurrently (represented by nodes of a rooted tree        */
 /**********************************************************************/
 typedef enum
-{ BLACK = 0, GREEN = 1, YELLOW = 2, RED = 3 } NodeColors;
+{ FAILED = 0, CONVERGED = 1, CONVERGING = 2, PROGRESSING = 3 } NodeStates;
 /**********************************************************************/
 
 /**********************************************************************/
@@ -55,7 +55,7 @@ typedef struct PTnode {
   int label;
   int pid;
   int depth;
-  NodeColors color;
+  NodeStates state;
   int nu;
   int nu_init;
   int nu_valid;
@@ -113,12 +113,12 @@ extern bool write_root_coordinates (PTnode*, options_struct*);
 extern PTnode* init_PTnode (int);
 extern void delete_tree (PTnode*);
 extern void print_PTnode (PTnode*);
-extern void print_color (PTnode*, FILE*);
+extern void print_state (PTnode*, FILE*);
 extern void print_tree (PTnode*);
 extern void visualize_tree (PTnode*, options_struct*);
 extern void assign_processes (PTnode*, int);
 extern void assign_depth (PTnode*, int);
-extern void assign_color (PTnode*, NodeColors);
+extern void assign_state (PTnode*, NodeStates);
 extern int count_children (PTnode*);
 extern void prune_diverged_nodes (PTnode*, options_struct*);
 extern void advance_root_node (PTnode**, options_struct*);
