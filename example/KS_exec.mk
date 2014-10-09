@@ -1,7 +1,7 @@
 # Modify these variables as appropriate for your system.
 MPIEXEC := /usr/bin/mpiexec
 # Default value of NPROC is 4; can be set at command line
-NPROC ?= 4
+NPROC ?= 13
 DATADIR := example/data
 PARAMETERFILE := example/parameters.txt
 

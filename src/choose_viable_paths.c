@@ -62,6 +62,11 @@ choose_viable_paths (PTnode *alpha) {
         if (is_viable && k!=best_path_index) {
           delete_tree (alpha->child[k]);
           alpha->child[k] = NULL;
+
+
+	  printf("deleting child %d ...............................\n",k);
+
+
         }
       }
     }
