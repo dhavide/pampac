@@ -12,6 +12,6 @@ SOURCES :=  advance_root_node.c assess_residuals.c \
             prune_diverged_nodes.c queue.c slave_process.c \
             stop_slaves.c validate_options.c visualize_tree.c write_root_coordinates.c
 
-TGT_POSTMAKE := mv libpampac.a lib/
-TGT_POSTCLEAN := rm -f lib/libpampac.a
+TGT_POSTMAKE := mkdir -p ${TOPDIR}/lib; mv libpampac.a ${TOPDIR}/lib
+TGT_POSTCLEAN := rm -f ${TOPDIR}/lib/libpampac.a; rm -rf ${TOPDIR}/src/build/
 

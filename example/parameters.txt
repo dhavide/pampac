@@ -1,6 +1,6 @@
 @param N_DIM  4100
 @param LAMBDA_MIN 0.0035
-@param LAMBDA_MAX 1.0
+@param LAMBDA_MAX -1.0
 @param LAMBDA_INDEX 4098
 @param DELTA_LAMBDA 0.001
 
@@ -21,5 +21,5 @@
 @param SCALE_FACTOR 1.0
 
 @param VERBOSE 3
-@param INPUT_FILENAME example/data/input.txt_2048
-@param TREE_BASE_FILENAME example/data/tree
+@param INPUT_FILENAME /home/dhavide/repositories/pampac/example/data/input.txt_2048
+@param TREE_BASE_FILENAME /home/dhavide/repositories/pampac/example/data/tree
