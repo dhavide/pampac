@@ -14,6 +14,7 @@ construct_viable_paths (PTnode *alpha) {
   is_leaf = (count_children(alpha)==0);
   is_valid = (alpha->state==CONVERGED);
   is_viable = is_valid || (alpha->state==CONVERGING);
+
   /* Default values NaN/-1; algorithm overwrites as necessary. */
   alpha->valid_path_length = NAN;
   alpha->valid_index = -1;
@@ -64,6 +65,7 @@ construct_viable_paths (PTnode *alpha) {
       }
     }
   }
+
   /* By default, valid/viable path lengths are NaN (i.e., when no paths
      include node alpha). If the locally computed valid/viable path
      length including alpha is strictly positive, update accordingly. */
@@ -79,5 +81,6 @@ construct_viable_paths (PTnode *alpha) {
     beta = alpha->child[valid_index];
     alpha->nu_valid = max(alpha->nu, beta->nu_init + beta->nu_valid);
   }
+
   return;
 }

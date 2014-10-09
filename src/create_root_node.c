@@ -17,7 +17,7 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
   root->depth = 0;
   root->state = CONVERGED;
   root->nu = 0;
-  root->h_init = NAN; /* This should not be used */
+  root->h_init = 0.; /* The intial root has no parent */
   root->h = opts->h_init;
   root->z = malloc (N_dim * sizeof (double));
   is_allocated = is_allocated && (root->z!=NULL);
