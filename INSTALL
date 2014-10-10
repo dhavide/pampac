@@ -1,4 +1,81 @@
 INSTALL:
 
-The file Makefile.in contains the principal macros that need to be defined to build the PAMPAC library. Users should customise macros in Makefile.in to suit their own system (notably PAMPACDIR should be the directory where the library will be installed).
+Short instructions:
 
+Modify the file Make.config to build the PAMPAC library and modify the files
+example/driver.config and example/parameters.txt to build and run the example
+provided. You should use the example as a template from which to develop your
+own examples.
+
+Long instructions:
+
+The principal file to modify to build the PAMPAC library is Make.config in the
+top-level directory. This file contains the principal macros that need to be
+defined for compilation and linking. You should customise the macros in that
+file (notably TOPDIR and any specific include paths (notably to the headers
+for the GSL (GNU Scientific Library). You should set the macros CC and MPIEXEC
+to reflect the paths to the MPI-enabled compiler and the mpiexec (or mpirun)
+command on your system.
+
+The example subdirectory contains code that uses the PAMPAC library to solve a
+model continuation problem based on a modified Kuramoto-Sivashinsky equation.
+To build this example executable "driver", you should modify the file
+example/driver.config. The macros within that file specify (among other things)
+the number of processors to use in runs (NPROCS), the location of the parameter
+file needed to run a code using the PAMPAC library (PARAMETERFILE), and the
+location in which output data will be written (DATADIR). This example requires
+the GSL (>=1.16) and the LAPACK (>=3.10) libraries, so specific flags in the
+file example/driver.config must be set to find those libraries on your system.
+
+Once Make.configure and driver.config are configured correctly, you should be
+able to use GNU make to build the library and run the example problem. The
+example problem can be used as a template for your own simulations. See the
+User Manual for more details.
+
+(1) To make the PAMPAC library (after modifying Make.config), type
+
+$ make libpampac.a
+
+from either the top-level directory ${TOPDIR} or from the subdirectory
+${TOPDIR}/src. By default, the library libpampac.a will be moved into
+${TOPDIR}/lib. If you wish to install it elsewhere, you can copy it manually
+or you can modify the macro TGT_POSTMAKE in the file ${TOPDIR}/src/src.mk
+to have the library built and installed eleswhere in your system.
+
+(2) To build the example (after modifying example/driver.config), type
+
+make driver
+
+from either the top-level directory ${TOPDIR} or from the subdirectory
+${TOPDIR}/example. This will create the binary executable driver in
+${TOPDIR}/example.
+
+(3) To run the example problem (once the driver has been created), type
+
+make run
+
+from either the top-level directory ${TOPDIR} or from the subdirectory
+${TOPDIR}/example. This will commence an MPI session with NPROCS processes
+using the data in PARAMETERFILE as input. Makefile variables can be set at
+the invocation of make, e.g.,
+
+make NPROCS=2 run
+
+(4) There is the option of generating visualizations of the tree data
+structure used within the core PAMPAC algorithm. Once the simulation has
+been run (assuming that the parameter VERBOSE in the parameter file has
+been set to 3 or higher), a sequence of .gv files will have been created
+withing the data directory (files in the dot language for graph
+visualization). Invoking
+
+make trees
+
+will run the command dot on each file to yield a corresponding .svg file
+showing the corresponding tree structure.
+
+(5) Running
+
+make clean
+
+(or make clean_libpampac.a or make clean_driver) will clean all the object
+and binary files from the directories to allow a fresh build.
