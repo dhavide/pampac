@@ -13,8 +13,8 @@
 @param MU 0.5
 @param GAMMA 2.0
 
-@param MAX_DEPTH 3
-@param MAX_GLOBAL_ITER 100
+@param MAX_DEPTH 2
+@param MAX_GLOBAL_ITER 300
 
 @param SCALE_FACTOR 0.75
 @param SCALE_FACTOR 1.0
