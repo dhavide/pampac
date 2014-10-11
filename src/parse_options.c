@@ -1,6 +1,5 @@
-#include <stdio.h>
-#include <string.h>
 #include "pampac.h"
+#include <string.h>
 /**********************************************************************/
 /* Uses input text file to determine problem and parameters required  */
 /* by the algorithm to control and tune performance.                  */
@@ -8,8 +7,9 @@
 bool
 parse_options (int argc, char *argv[], options_struct *opts) {
   FILE *param_file;
-  bool has_succeeded = false;
 
+
+  printf ("parse_options: opening parameter file for parsing.\n");
   if (argc<2) {
     printf("parse_options: Parameter_file required command-line input.\n");
     return false;
@@ -17,14 +17,14 @@ parse_options (int argc, char *argv[], options_struct *opts) {
   param_file = fopen (argv[1], "r");
   if (param_file == NULL) {
     printf ("parse_options: Error Opening File.\n");
-    return has_succeeded;
+    return false;
   }
 
   /* Parse param_file, one line at a time */
-  int n_bytes = 0;
+  size_t n_bytes = 0;
   char *line = NULL;
-  int bytes_read = getline (&line, &n_bytes, param_file);
-  while (bytes_read>0) {
+  ssize_t bytes_read = getline (&line, &n_bytes, param_file);
+  while (bytes_read!=-1) {
     char param[7];
     bool has_parsed;
     char* parameter_name = malloc (bytes_read*sizeof(char));
@@ -39,7 +39,7 @@ parse_options (int argc, char *argv[], options_struct *opts) {
     if (!has_parsed) {
       printf("parse_options: Invalid option parsed.\n");
       fclose (param_file);
-      return has_succeeded;
+      return false;
     }
     bytes_read = getline (&line, &n_bytes, param_file);
   }
@@ -51,7 +51,7 @@ parse_options (int argc, char *argv[], options_struct *opts) {
   opts->lambda_dir = (h > 0) ? +1.0 : -1.0;
   opts->h_init = (h > 0) ? h : -h;
 
-  has_succeeded = validate_options (opts);
+  bool has_succeeded = validate_options (opts);
   return has_succeeded;
 }
 

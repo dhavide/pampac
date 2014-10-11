@@ -9,6 +9,11 @@ prune_diverged_nodes (PTnode *alpha, options_struct *opts) {
   bool have_pruned_all_children = true;
   bool all_children_NULL = true;
 
+  /* Debug message prints only from root node */
+  if ((opts->verbose > 3) && (alpha->depth==0)) {
+    printf ("prune_diverged_nodes: Traversing tree to remove ");
+    printf( "FAILED nodes...\n");
+  }
   for (k = 0; k < alpha->max_children; k++) {
     PTnode* beta = alpha->child[k];
     if (beta != NULL) {

@@ -16,7 +16,7 @@ bool write_coordinates (int N_dim, double *z) {
   bool has_succeeded = true; /* Writing succeeds by default */
   int fprintf_flag;
   FILE *out_file;
-  char output_filename[] = "example/data/output.txt";
+  char output_filename[] = "data/output.txt";
 
   /* We choose in this instance to write the elements of z row-wise
    * into an ASCII file. Successive points computed on the curve are
@@ -26,7 +26,8 @@ bool write_coordinates (int N_dim, double *z) {
 
   out_file = fopen (output_filename, "a+");
   if (out_file == NULL) {
-    printf ("Error Opening File.\n");
+    printf ("write_coordinates: Eror opening file '%s'.\n",
+             output_filename);
     return false;
   }
 

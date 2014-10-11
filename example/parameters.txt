@@ -13,13 +13,15 @@
 @param MU 0.5
 @param GAMMA 2.0
 
-@param MAX_DEPTH 2
-@param MAX_GLOBAL_ITER 300
+@param MAX_DEPTH 3
+@param MAX_GLOBAL_ITER 2
 
 @param SCALE_FACTOR 0.75
 @param SCALE_FACTOR 1.0
 @param SCALE_FACTOR 2.0
 
-@param VERBOSE 3
-@param INPUT_FILENAME /home/dhavide/repositories/pampac/example/data/input.txt_2048
-@param TREE_BASE_FILENAME /home/dhavide/repositories/pampac/example/data/tree
+@param VERBOSE 5
+@param INPUT_FILENAME data/input.txt_2048
+@param TREE_BASE_FILENAME data/tree
+
+

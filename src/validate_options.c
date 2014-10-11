@@ -10,6 +10,7 @@
 bool validate_options (options_struct *opts) {
   bool is_valid = true;
 
+  printf ("validate_options: Checking options from parameter file.\n");
   if (opts->N_dim<=0) {
     printf ("validate_options: N_DIM must be positive ");
     printf ("(N_DIM = %d)\n", opts->N_dim);
@@ -90,8 +91,8 @@ bool validate_options (options_struct *opts) {
     is_valid = false;
   }
 
-  if (opts->max_depth<=1) {
-    printf ("validate_options: MAX_DEPTH must greater than 1 ");
+  if (opts->max_depth<=0) {
+    printf ("validate_options: MAX_DEPTH must positive ");
     printf ("(MAX_DEPTH = %d)\n", opts->max_depth);
     is_valid = false;
   }
@@ -125,6 +126,11 @@ bool validate_options (options_struct *opts) {
 
   if (opts->input_filename==NULL) {
     printf("validate_options: INPUT_FILENAME not set\n");
+    is_valid = false;
+  }
+
+  if (opts->verbose<0) {
+    printf("validate_options: VERBOSE not set\n");
     is_valid = false;
   }
 

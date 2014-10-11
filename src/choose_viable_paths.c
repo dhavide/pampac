@@ -8,6 +8,7 @@ choose_viable_paths (PTnode *alpha) {
   int k, best_path_index;
   double valid_path_progress, viable_path_progress;
   PTnode *beta;
+
   /* At leaf nodes return immediately; otherwise, choose viable path */
   bool is_leaf = (count_children(alpha)==0);
   if (is_leaf)

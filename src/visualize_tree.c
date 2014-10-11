@@ -12,7 +12,8 @@ visualize_tree (PTnode *root, options_struct *opts) {
   char *filename;
   FILE *out_file;
 
-  printf ("visualize_tree: entering...\n");
+  if (opts->verbose <=2)
+    return;
 
   /* Parameter tree_filename_num is negative when a previously
    * attempted file-write failed (in which case, don't do more). */

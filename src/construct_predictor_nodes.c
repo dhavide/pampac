@@ -9,14 +9,21 @@ construct_predictor_nodes (PTnode * alpha, options_struct * opts) {
   int k;
   bool is_max_depth, is_leaf_node, is_failed, has_data;
   PTnode *beta;
+
+  /* Debug message prints only from root node */
+  if ((opts->verbose > 3) && (alpha->depth==0)) {
+    printf ("construct_predictor_nodes: Traversing tree, ");
+    printf (" creating predictor nodes...\n");
+  }
+
   /* Predictor steps are constructed only when:
      - the node alpha is not FAILED
      - the node alpha's depth is below prescribed maximum
      - the node alpha is a leaf node
    */
-
   is_failed = (alpha->state == FAILED);
-  is_max_depth = (alpha->depth >= opts->max_depth - 1);
+  /* Note: There are max_depth levels indexed from 0 */
+  is_max_depth = (alpha->depth >= opts->max_depth-1);
   if (is_max_depth || is_failed)
     return;
   is_leaf_node = (count_children (alpha) == 0);

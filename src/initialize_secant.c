@@ -5,6 +5,11 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
   bool has_converged, has_failed;
   double *residual, r_nrm;
 
+  if (opts->verbose>3) {
+    printf ("initialize_secant: Computing second point on curve ");
+    printf ("to get secant direction.\n");
+  }
+
   /* Assume that node root has been initialized with a vector
    * root->z somehow. This function determines a nearby point on
    * the homotopy curve by perturbing the continuation parameter
@@ -38,11 +43,11 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     if (has_failed) {
       printf("initialize_secant: Failed to determine initial secant");
       printf(" direction.\n");
-      printf("Maximum of %d corrector iterations attained.\n",
+      printf("initialize_secant: Maximum of %d corrector iterations attained.\n",
              opts->max_iter);
-      printf("Residual norm: %12.5e\n",opts->tol_residual);
-      printf("Desired residual norm: %12.5e\n",opts->tol_residual);
-      printf("Aborting processes.\n");
+      printf("initialize_secant: Residual norm: %7.1e\n", opts->tol_residual);
+      printf("initialize_secant: Desired residual norm: %7.1e\n", opts->tol_residual);
+      printf("initialize_secant: Aborting processes.\n");
       return false;
     }
     single_corrector_step (N_dim, root->z_init, root->T_init);
@@ -50,7 +55,7 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     r_nrm = cblas_dnrm2 (N_dim-1, residual, 1);
     if (opts->verbose>1) {
       printf("initialize_secant: count=%3d,", count);
-      printf(" residual norm=%12.5g.\n", r_nrm);
+      printf(" residual norm=%7.1e.\n", r_nrm);
     }
     has_converged = (r_nrm < opts->tol_residual);
   }

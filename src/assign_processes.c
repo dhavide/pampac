@@ -12,7 +12,8 @@ assign_processes (PTnode *root, int N_proc) {
   Queue q;
   PTnode *node;
   int k, label = 0, pid = 1;
-  // Note: pid starts at 1. Process 0 is the master process.
+
+  /* Note: pid starts at 1. Process 0 is the master process. */
   root->depth = 0;
   root->state = CONVERGED;
   if (N_proc==1) /* Terminates if only one processor */
@@ -25,9 +26,10 @@ assign_processes (PTnode *root, int N_proc) {
     node = front_of_queue (&q);
     dequeue (&q); /* Mark node as visited by dequeuing */
     /* Assign processor ID=MPI_PROC_NULL to nodes:
-    > that have previously converged (i.e., CONVERGED)
-    > that have diverged (i.e., FAILED)
-    > when there are no more processors available */
+       * that have previously converged (i.e., CONVERGED)
+       * that have diverged (i.e., FAILED)
+       * when there are no more processors available
+    */
     node->label = label++;
     node->pid = MPI_PROC_NULL;
     if (node->state==PROGRESSING || node->state==CONVERGING)

@@ -3,6 +3,7 @@
 #ifndef max
 #define max( a, b ) (((a)>(b)) ? (a) : (b))
 #endif
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -121,7 +122,7 @@ extern void assign_depth (PTnode*, int);
 extern void assign_state (PTnode*, NodeStates);
 extern int count_children (PTnode*);
 extern void prune_diverged_nodes (PTnode*, options_struct*);
-extern void advance_root_node (PTnode**, options_struct*);
+extern bool advance_root_node (PTnode**, options_struct*);
 
 extern void assess_residuals (PTnode*, options_struct*);
 extern void compute_corrector_steps (PTnode*, int);

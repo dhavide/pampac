@@ -29,19 +29,19 @@ main (int argc, char *argv[]) {
     master_process (N_p, argc, argv);
     teardown_globals ();   /* Clean-up */
 
-    printf("PID %d: Cleaning up master process.\n", p_id);
-    fflush(stdout);
+    printf ("PID %d: Cleaning up master process.\n", p_id);
+    fflush (stdout);
     MPI_Barrier (MPI_COMM_WORLD);
   } else {
     /* N_dim is read from disk by master and broadcast to slaves */
-    MPI_Bcast(&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast (&N_dim,1,MPI_INT,0,MPI_COMM_WORLD);
 
     setup_globals (N_dim); /* Initialisation */
     slave_process (N_dim);
     teardown_globals ();   /* Clean-up */
 
-    printf("PID %d: Cleaning up slave process.\n", p_id);
-    fflush(stdout);
+    printf ("PID %d: Cleaning up slave process.\n", p_id);
+    fflush (stdout);
     MPI_Barrier (MPI_COMM_WORLD);
   }
   MPI_Finalize ();      /* shut down MPI */

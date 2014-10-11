@@ -7,6 +7,9 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
   int lambda_index, global_iter, max_global_iter;
   bool has_failed, has_completed;
 
+  if (opts->verbose>3)
+    printf ("principal_pampac_loop: Beginning main computation...\n");
+
   /* Setting convenient aliases for optional parameters */
   lambda_min = opts->lambda_min;
   lambda_max = opts->lambda_max;
@@ -33,64 +36,34 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
 
   time_init = MPI_Wtime ();
   while (!has_completed && !has_failed) {
+    printf ("principal_pampac_loop: while iteration %i:\n", global_iter);
     has_failed = (global_iter > max_global_iter) || (h < h_min);
     if (has_failed) {
-      printf ("principal_pampac_loop:");
-      printf (" Failed to attain goal\n");
-      printf ("global iterations=%d, h=%10.5g\n", global_iter, h);
+      printf ("principal_pampac_loop: Premature termination\n"); 
+      printf ("(global_iter = %i > %i = max_global_iter) or ",
+               global_iter, max_global_iter);
+      printf ("(h = %7.1e < %7.1e = h_min)\n", h, h_min);
       break;
     }
     /* Spawn new nodes on tree at leaves if possible. */
     construct_predictor_nodes (root, opts);
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Constructed predictor nodes...\n");
     assign_processes (root, N_p);
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Assigned processes...\n");
     assign_predictor_steps (root, opts);
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Assigned predictor steps...\n");
-    if (opts->verbose > 2)
-      visualize_tree (root, opts);
+    visualize_tree (root, opts);
 
     compute_corrector_steps (root, N_p);
-
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Computing (concurrent) corrector steps...\n");
-
     assess_residuals (root, opts);
-
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Assessed residuals...\n");
-
-    if (opts->verbose > 2)
-      visualize_tree (root, opts);
+    visualize_tree (root, opts);
 
     prune_diverged_nodes (root, opts);
-
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Pruned diverged nodes...\n");
-
-    if (opts->verbose > 2)
-      visualize_tree (root, opts);
+    visualize_tree (root, opts);
 
     construct_viable_paths (root);
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Constructed viable paths...\n");
-
     choose_viable_paths (root);
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Choose viable paths...\n");
-
-    if (opts->verbose > 2)
-      visualize_tree (root, opts);
+    visualize_tree (root, opts);
 
     advance_root_node (&root, opts);
-    if (opts->verbose > 3)
-      printf ("principal_pampac_loop: Advanced root node...\n");
-
-    if (opts->verbose > 2)
-      visualize_tree (root, opts);
+    visualize_tree (root, opts);
 
     global_iter++;
     lambda = root->z[lambda_index];
@@ -100,18 +73,13 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
   time_final = MPI_Wtime ();
 
   if (opts->verbose > 0) {
-    if (has_completed)
+    if (has_completed) {
       printf ("principal_pampac_loop: Completed main loop\n");
-    else
-      printf ("principal_pampac_loop: Premature termination\n");
-    printf ("Time elapsed: %g\n", time_final - time_init);
-    printf ("global iterations=%d.\n", global_iter);
-    printf ("has_completed = %5s, has_failed = %5s\n",
-            (has_completed ? " true" : "false"),
-            (has_failed ? " true" : "false"));
-    printf ("lambda =%10g, lambda_min=%10g, lambda_max=%10g\n",
-            lambda, lambda_min, lambda_max);
-    printf ("h = %10g, h_min = %10g\n", h, h_min);
+      printf ("principal_pampac_loop: %7.1e <= lambda = %7.1e <= %7.1e\n",
+              lambda_min, lambda, lambda_max); 
+    }
+    printf ("principal_pampac_loop: Time elapsed = %g\n", time_final - time_init);
+    printf ("principal_pampac_loop: global iterations = %d.\n", global_iter);
   }
   return;
 }

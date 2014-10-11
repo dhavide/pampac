@@ -8,6 +8,7 @@ void
 compute_corrector_steps (PTnode * alpha, int N_p) {
   int k;
   bool needs_correction_step, has_data;
+
   needs_correction_step = (alpha->state==PROGRESSING || alpha->state==CONVERGING);
   has_data = (alpha->z!=NULL) && (alpha->T_init!=NULL);
   if (has_data && needs_correction_step) {

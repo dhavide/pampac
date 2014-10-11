@@ -1,12 +1,10 @@
 #include "pampac.h"
 /**********************************************************************/
 /* Blanks fields of options with default values (to make it easier in */
-/* in principle to detect errors in which fields have not been        */
-/* assigned). As such, pointers are initialised with NULL, integer-   */
-/* valued fields are initialised with -1 and real-valued fields are   */
-/* initialised with NAN.                                              */
+/* in principle to detect uninitialised fields). As such, pointers    */
+/* are initialised with NULL, integer-valued fields are initialised   */
+/* with -1 and real-valued fields are initialised with NAN.           */
 /**********************************************************************/
-
 void initialize_options (options_struct *opts) {
   opts->N_dim = -1;
   opts->lambda_min = NAN;

@@ -42,7 +42,7 @@ construct_viable_paths (PTnode *alpha) {
     for (k=0; k<alpha->max_children; k++) {
       beta = alpha->child[k];
       if (beta!=NULL) {
-        construct_viable_paths (beta);  // recursive call
+        construct_viable_paths (beta);  /* recursive call */
         is_child_valid = (beta->state==CONVERGED);
         is_child_viable = is_child_valid ||
                           (beta->state==CONVERGING);

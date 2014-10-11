@@ -12,22 +12,16 @@ master_process (int N_p, int argc, char *argv[]) {
   options_struct opts;
   bool has_succeeded;
 
+  printf ("master_process: initializing options.\n");
   /* Default options before passing */
   initialize_options (&opts);
   opts.verbose = 2;
   opts.max_children = 0;
+  printf ("master_process: parsing parameter file for options.\n");
   has_succeeded = parse_options (argc, argv, &opts);
-  /* Verification: meaningful tree depth must be larger than 1 */
-  if (!has_succeeded) {
-    printf ("master_process: Unable to parse parameter file\n");
-    printf ("Terminating...\n");
-    goto cleanup;
-  }
 
-  /* Verification: meaningful tree depth must be larger than 1 */
-  if (opts.max_depth<=1) {
-    printf ("master_process: Require max_depth > 1; max_depth = %d\n",
-            opts.max_depth);
+  if (!has_succeeded) {
+    printf ("master_process: Errors parsing parameter file\n");
     printf ("Terminating...\n");
     goto cleanup;
   }
@@ -81,17 +75,31 @@ cleanup:
   stop_slaves(N_p);
   if (opts.verbose>0)
     printf("master_process: Cleaning up memory.\n");
-  if (opts.input_filename!=NULL)
+  if (opts.input_filename!=NULL) {
+    printf ("master_process: freeing opts.input_filename (%s)\n",opts.input_filename);
     free (opts.input_filename);
-  if (opts.scale_factors!=NULL)
+    opts.input_filename = NULL;
+  }
+  if (opts.scale_factors!=NULL) {
+    printf ("master_process: freeing opts.scale_factors (%g, %g, ...)\n",
+            opts.scale_factors[0], opts.scale_factors[1]);
+    free (opts.scale_factors);
+    opts.scale_factors = NULL;
+  }
     free (opts.scale_factors);
   if (root!=NULL) {
     /* z_init is a shallow copy in every node of the tree *except* the
     * root node. As such, z_init must be *explicitly* deallocated
     * prior to calling the function delete_tree. */
-    if (root->z_init != NULL)
+    if (root->z_init != NULL) {
+      printf ("master_process: freeing root->z_init (%g, %g, ...)\n",
+            root->z_init[0], root->z_init[1]);
       free (root->z_init);
+      root->z_init = NULL;
+    }
+    printf("master_process: About to delete tree from root node...\n");
     delete_tree (root);
+    printf("master_process: Successful return from delete_tree...\n");
   }
   return;
 }

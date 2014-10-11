@@ -8,6 +8,10 @@ load_initial_coordinates (PTnode* node, options_struct* opts) {
   char *filename = opts->input_filename;
   double *z = node->z;
   FILE *input_file;
+
+  if (opts->verbose>3)
+    printf ("load_coordinates: Reading user data into root node.\n");
+
   input_file = fopen (filename, "r");
   if (input_file == NULL) {
     printf ("load_initial_coordinates: Error Opening File.\n");

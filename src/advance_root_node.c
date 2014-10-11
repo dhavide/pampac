@@ -5,11 +5,15 @@
 /* updating iterates to successive depths in the event that there are */
 /* several successive depths with solitary CONVERGED nodes.               */
 /**********************************************************************/
-void
+bool
 advance_root_node (PTnode ** root, options_struct * opts) {
   int k;
   bool has_solitary_child, has_converged, has_succeeded;
   PTnode *root_tmp = *root;
+
+  if (opts->verbose > 3)
+    printf ("advance_root_node: Advancing root node of tree...\n");
+
   /* Replace root node iff it has a solitary CONVERGED child. */
   has_solitary_child = count_children (root_tmp) == 1;
   has_converged = root_tmp->state == CONVERGED;
@@ -41,5 +45,5 @@ advance_root_node (PTnode ** root, options_struct * opts) {
     has_converged = root_tmp->state == CONVERGED;
   }
   assign_depth (*root, 0); /* Update to reflect changes in root node. */
-  return;
+  return has_succeeded;
 }
