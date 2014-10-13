@@ -27,8 +27,8 @@ parse_options (int argc, char *argv[], options_struct *opts) {
   while (bytes_read!=-1) {
     char param[7];
     bool has_parsed;
-    char* parameter_name = malloc (bytes_read*sizeof(char));
-    char* value = malloc (bytes_read*sizeof(char));
+    char* parameter_name = malloc (bytes_read * sizeof (char));
+    char* value = malloc (bytes_read * sizeof (char));
     if ( sscanf (line, "%s %s %s", param, parameter_name, value)==3 &&
          strcmp (param, "@param") == 0 )
       has_parsed = assign_options (parameter_name, value, opts);

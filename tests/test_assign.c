@@ -30,7 +30,7 @@ main (int argc, char* argv[]) {
   visualize_tree(root,&opts, count++);
   print_tree (root);
   printf("Calling delete_tree...\n");
-  free (root->z_parent); /* Only one needs deallocation */
+  free (root->z_init); /* Only one needs deallocation */
   delete_tree(root);
   return 0;
 }

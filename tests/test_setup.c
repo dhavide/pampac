@@ -21,30 +21,34 @@ set_options(int depth, int max_children) {
   opts.gamma = 1.5;
   opts.max_depth = depth;
   opts.max_children = max_children;
-  opts.scale_process[0] = 0.5;
-  for (k=0; k<max_children; k++)
-    opts.scale_process[k] = 0.5 + k*0.25;
-  opts.output_file_name = "foo.txt";
-  opts.input_file_name = "foo.txt";
-  opts.base_name_tree = "./data/trees";
+  opts.scale_factors = malloc (max_children * sizeof (double));
+  for (k=0; k<opts.max_children; k++)
+    opts.scale_factors[k] = 0.5 + k*0.25;
+  opts.input_filename = "input.txt";
+  opts.tree_base_filename = "./data/trees";
+  opts.tree_filename_num = 0;
   return (opts);
 }
+
+// int free_options (options_struct *opts) {
+
+
 
 PTnode* make_tree(options_struct *opts) {
   int k;
   PTnode *root = init_PTnode (opts->max_children);
   root->N_dim = opts->N_dim;
-  root->color = GREEN;
+  root->state = CONVERGED;
   root->h = opts->h_init;
   root->nu = 0;
   root->max_children = opts->max_children;
   root->depth = 0;
   root->z = malloc (root->N_dim * sizeof (double));
-  root->T_parent = malloc (root->N_dim * sizeof (double));
-  root->z_parent = malloc (root->N_dim * sizeof (double));
+  root->T_init = malloc (root->N_dim * sizeof (double));
+  root->z_init = malloc (root->N_dim * sizeof (double));
   for (k=0; k<root->N_dim; k++) {
     root->z[k] = (double)(k+2);
-    root->z_parent[k] = (double)(k+1);
+    root->z_init[k] = (double)(k+1);
   }
   compute_secant_direction (root);
   /* Generate new levels of tree (nodes only) */
@@ -59,101 +63,101 @@ PTnode* make_tree(options_struct *opts) {
 
 void tree43(PTnode* root) {
   /* Given tree of depth 4 with 3 children per node, assigns various
-     colors to the nodes and prunes a few subtrees. */
-  root->color = GREEN;
+     states to the nodes and prunes a few subtrees. */
+  root->state = CONVERGED;
   root->nu = 4;
 
-  root->child[0]->color = GREEN;
-  root->child[1]->color = GREEN;
-  root->child[2]->color = GREEN;
+  root->child[0]->state = CONVERGED;
+  root->child[1]->state = CONVERGED;
+  root->child[2]->state = CONVERGED;
 
   root->child[0]->nu = 4;
   root->child[1]->nu = 5;
   root->child[2]->nu = 3;
 
-  root->child[0]->child[0]->color = GREEN;
-  root->child[0]->child[1]->color = BLACK;
-  root->child[0]->child[2]->color = YELLOW;
+  root->child[0]->child[0]->state = CONVERGED;
+  root->child[0]->child[1]->state = FAILED;
+  root->child[0]->child[2]->state = CONVERGING;
 
   root->child[0]->child[0]->nu = 4;
   root->child[0]->child[1]->nu = 3;
   root->child[0]->child[2]->nu = 3;
 
-  root->child[1]->child[0]->color = BLACK;
+  root->child[1]->child[0]->state = FAILED;
   delete_tree (root->child[1]->child[1]);
   root->child[1]->child[1]=NULL;
-  root->child[1]->child[2]->color = BLACK;
+  root->child[1]->child[2]->state = FAILED;
 
   root->child[1]->child[0]->nu = 4;
   root->child[1]->child[2]->nu = 3;
 
-  root->child[2]->child[0]->color = YELLOW;
-  root->child[2]->child[1]->color = RED;
-  root->child[2]->child[2]->color = BLACK;
+  root->child[2]->child[0]->state = CONVERGING;
+  root->child[2]->child[1]->state = PROGRESSING;
+  root->child[2]->child[2]->state = FAILED;
 
   root->child[2]->child[0]->nu = 4;
   root->child[2]->child[1]->nu = 2;
   root->child[2]->child[2]->nu = 3;
 
-  root->child[0]->child[0]->child[0]->color = BLACK;
+  root->child[0]->child[0]->child[0]->state = FAILED;
   delete_tree (root->child[0]->child[0]->child[1]);
   root->child[0]->child[0]->child[1]=NULL;
-  root->child[0]->child[0]->child[2]->color = BLACK;
+  root->child[0]->child[0]->child[2]->state = FAILED;
 
   root->child[0]->child[0]->child[0]->nu = 3;
   root->child[0]->child[0]->child[2]->nu = 3;
 
-  root->child[0]->child[1]->child[0]->color = RED;
-  root->child[0]->child[1]->child[1]->color = YELLOW;
-  root->child[0]->child[1]->child[2]->color = RED;
+  root->child[0]->child[1]->child[0]->state = PROGRESSING;
+  root->child[0]->child[1]->child[1]->state = CONVERGING;
+  root->child[0]->child[1]->child[2]->state = PROGRESSING;
 
   root->child[0]->child[1]->child[0]->nu = 3;
   root->child[0]->child[1]->child[1]->nu = 3;
   root->child[0]->child[1]->child[2]->nu = 3;
 
-  root->child[0]->child[2]->child[0]->color = RED;
-  root->child[0]->child[2]->child[1]->color = BLACK;
-  root->child[0]->child[2]->child[2]->color = YELLOW;
+  root->child[0]->child[2]->child[0]->state = PROGRESSING;
+  root->child[0]->child[2]->child[1]->state = FAILED;
+  root->child[0]->child[2]->child[2]->state = CONVERGING;
 
   root->child[0]->child[2]->child[0]->nu = 2;
   root->child[0]->child[2]->child[1]->nu = 2;
   root->child[0]->child[2]->child[2]->nu = 2;
 
-  root->child[1]->child[0]->child[0]->color = RED;
-  root->child[1]->child[0]->child[1]->color = YELLOW;
-  root->child[1]->child[0]->child[2]->color = RED;
+  root->child[1]->child[0]->child[0]->state = PROGRESSING;
+  root->child[1]->child[0]->child[1]->state = CONVERGING;
+  root->child[1]->child[0]->child[2]->state = PROGRESSING;
 
   root->child[1]->child[0]->child[0]->nu = 2;
   root->child[1]->child[0]->child[1]->nu = 4;
   root->child[1]->child[0]->child[2]->nu = 2;
 
-  root->child[1]->child[2]->child[0]->color = RED;
-  root->child[1]->child[2]->child[1]->color = GREEN;
-  root->child[1]->child[2]->child[2]->color = YELLOW;
+  root->child[1]->child[2]->child[0]->state = PROGRESSING;
+  root->child[1]->child[2]->child[1]->state = CONVERGED;
+  root->child[1]->child[2]->child[2]->state = CONVERGING;
 
   root->child[1]->child[2]->child[0]->nu = 3;
   root->child[1]->child[2]->child[1]->nu = 5;
   root->child[1]->child[2]->child[2]->nu = 2;
 
-  root->child[2]->child[0]->child[0]->color = GREEN;
-  root->child[2]->child[0]->child[1]->color = YELLOW;
-  root->child[2]->child[0]->child[2]->color = RED;
+  root->child[2]->child[0]->child[0]->state = CONVERGED;
+  root->child[2]->child[0]->child[1]->state = CONVERGING;
+  root->child[2]->child[0]->child[2]->state = PROGRESSING;
 
   root->child[2]->child[0]->child[0]->nu = 5;
   root->child[2]->child[0]->child[1]->nu = 2;
   root->child[2]->child[0]->child[2]->nu = 2;
 
-  root->child[2]->child[1]->child[0]->color = BLACK;
-  root->child[2]->child[1]->child[1]->color = GREEN;
+  root->child[2]->child[1]->child[0]->state = FAILED;
+  root->child[2]->child[1]->child[1]->state = CONVERGED;
   delete_tree (root->child[2]->child[1]->child[2]);
   root->child[2]->child[1]->child[2] = NULL;
 
   root->child[0]->child[2]->child[0]->nu = 2;
   root->child[0]->child[2]->child[1]->nu = 5;
 
-  root->child[2]->child[2]->child[0]->color = YELLOW;
-  root->child[2]->child[2]->child[1]->color = GREEN;
-  root->child[2]->child[2]->child[2]->color = BLACK;
+  root->child[2]->child[2]->child[0]->state = CONVERGING;
+  root->child[2]->child[2]->child[1]->state = CONVERGED;
+  root->child[2]->child[2]->child[2]->state = FAILED;
 
   root->child[2]->child[2]->child[0]->nu = 4;
   root->child[2]->child[2]->child[0]->nu = 4;

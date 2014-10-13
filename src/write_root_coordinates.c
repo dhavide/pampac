@@ -6,10 +6,9 @@
 /**********************************************************************/
 bool
 write_root_coordinates (PTnode *node, options_struct *opts) {
-  if (opts->verbose>0) {
-    printf ("write_root_coordinates: Writing point on curve to file, ");
-    printf ("lambda = %12.5g\n", node->z[opts->lambda_index]);
-  }
+  debug_print (0, opts, __func__,
+               "Writing point on curve to file, lambda = %12.5g\n",
+               node->z[opts->lambda_index]);
   bool has_succeeded = write_coordinates (node->N_dim, node->z);
   return has_succeeded;
 }

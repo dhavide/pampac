@@ -30,7 +30,7 @@ visualize_tree (PTnode *root, options_struct *opts) {
            opts->tree_base_filename, opts->tree_filename_num);
   out_file = fopen (filename, "w");
 
-  free (filename); /* Must free before test that follows... */
+  free (filename); /* Must release before test that follows... */
 
   if (out_file == NULL) {
     printf ("visualize_tree: Warning, error opening %s.\n", filename);

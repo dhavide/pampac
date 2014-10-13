@@ -6,6 +6,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <math.h>
 /**********************************************************************/
@@ -94,6 +95,8 @@ typedef struct Queue {
 extern void master_process (int, int, char**);
 extern void slave_process (int);
 
+extern void debug_print (int, options_struct*, const char *fname,
+                         const char *, ...);
 extern bool parse_options (int, char**, options_struct*);
 extern bool assign_options (char*, char*, options_struct*);
 extern void initialize_options (options_struct*);

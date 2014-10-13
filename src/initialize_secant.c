@@ -16,7 +16,7 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
    * a small amount and using corrector steps to return to the
    * curve. The two nearby points determine a secant direction. */
   N_dim = opts->N_dim;
-  residual = malloc((N_dim-1)*sizeof(double));
+  residual = malloc ((N_dim-1) * sizeof (double));
   /* Copy z into z_init */
   for (k=0; k<N_dim; k++)
     root->z_init[k] = root->z[k];

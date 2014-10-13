@@ -22,6 +22,7 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
   root->nu = 0;
   root->h_init = 0.; /* The intial root has no parent */
   root->h = opts->h_init;
+  /* Attempt to allocate memory for fields z, z_init, & T_init. */
   root->z = malloc (N_dim * sizeof (double));
   is_allocated = is_allocated && (root->z!=NULL);
   root->z_init = malloc (N_dim * sizeof (double));
@@ -29,9 +30,6 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
   root->T_init = malloc (N_dim * sizeof (double));
   is_allocated = is_allocated && (root->T_init!=NULL);
   if (!is_allocated) {
-    free(root->z);
-    free(root->z_init);
-    free(root->z_init);
     *root_addr = NULL;
     return false;
   }
