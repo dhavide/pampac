@@ -4,7 +4,7 @@
 /* Recursively traverses tree, freeing nodes and associated memory.   */
 /**********************************************************************/
 void
-delete_tree (PTnode *alpha) {
+delete_tree (PTnode *alpha, options_struct *opts) {
   int k;
   if (alpha==NULL)
     return;
@@ -12,7 +12,7 @@ delete_tree (PTnode *alpha) {
     /* First, descend to leaves recursively and delete child nodes */
     for (k=0; k < alpha->max_children; k++) {
       if (alpha->child[k] != NULL)
-        delete_tree (alpha->child[k]);
+        delete_tree (alpha->child[k], opts);
       /* When child nodes are deleted, erase pointers */
       alpha->child[k] = NULL;
     }
@@ -35,16 +35,18 @@ delete_tree (PTnode *alpha) {
    * it is deleted, it is necessary to release the memory associated
    * with the field z_init explicitly at that time.
    */
-  if ((alpha->z_init!=NULL) && (alpha->depth==0))
-     free (alpha->z_init);
+  if (alpha->depth==0) {
+    if (alpha->z_init!=NULL)
+      free (alpha->z_init);
+    debug_print (5, opts, __func__,
+                 "Removing root node after deleting tree.\n");
+  }
   /*
    * Finally, release memory associated with node alpha itself. Be
    * aware that this does not affect the pointer in the calling stack
    * frame, i.e., "call-by-value" means that the pointer itself will
    * still point to some memory location in that stack frame.
    */
-  if (alpha->depth==0)
-    printf("delete_tree: Removing root node after deleting tree.\n");
   free (alpha);
 
   return;

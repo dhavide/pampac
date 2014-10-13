@@ -57,7 +57,7 @@ master_process (int N_p, int argc, char *argv[]) {
     debug_print (1, &opts, __func__,
                  "Initial residual = %7.1e\n", res_nrm);
     debug_print (1, &opts, __func__,
-                 "Initial lambda = %10.4e\n", root->z[lambda_index]);
+                 "Initial lambda = %8.1e\n", root->z[lambda_index]);
   }
 
   /* Verification: Determine initial secant direction */
@@ -68,16 +68,17 @@ master_process (int N_p, int argc, char *argv[]) {
     debug_print (0, &opts, __func__,
                  "Maximum of %d iterations exceeded.\n", opts.max_iter);
     debug_print (0, &opts, __func__,
-                 "Desired residual tolerance: %12.5e\n",opts.tol_residual);
+                 "Desired residual tolerance: %7.1e\n",opts.tol_residual);
     debug_print (0, &opts, __func__,
                  "Terminating.\n");
     goto cleanup;
   }
 
-  principal_pampac_loop (N_p, root, &opts);
-  debug_print (0, &opts, __func__, 
-               "Completed PAMPAC loop; logging/cleaning up.\n");
+  principal_pampac_loop (root, &opts, N_p);
+  debug_print (0, &opts, __func__, "Completed PAMPAC loop; logging.\n");
   write_root_coordinates (root, &opts);
+  debug_print (0, &opts, __func__, "Completed PAMPAC loop; cleaning up.\n");
+
 
 cleanup:
   debug_print (0, &opts, __func__, "Shutting down slave processes.\n");
@@ -108,6 +109,6 @@ cleanup:
   }
 
   if (root!=NULL)
-    delete_tree (root);
+    delete_tree (root, &opts);
   return;
 }

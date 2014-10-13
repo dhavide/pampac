@@ -11,10 +11,9 @@ construct_predictor_nodes (PTnode * alpha, options_struct * opts) {
   PTnode *beta;
 
   /* Debug message prints only from root node */
-  if ((opts->verbose > 3) && (alpha->depth==0)) {
-    printf ("construct_predictor_nodes: Traversing tree, ");
-    printf (" creating predictor nodes...\n");
-  }
+  if (alpha->depth==0)
+    debug_print (5, opts, __func__,
+                 "Traversing tree, creating predictor nodes...\n");
 
   /* Predictor steps are constructed only when:
      - the node alpha is not FAILED
@@ -26,6 +25,7 @@ construct_predictor_nodes (PTnode * alpha, options_struct * opts) {
   is_max_depth = (alpha->depth >= opts->max_depth-1);
   if (is_max_depth || is_failed)
     return;
+
   is_leaf_node = (count_children (alpha) == 0);
   if (is_leaf_node) {
     bool has_exceeded_max_step = false;
@@ -44,7 +44,7 @@ construct_predictor_nodes (PTnode * alpha, options_struct * opts) {
         }
         /* Allocate node and fill in scalar fields; assign actual
            process ID before allocating array fields of beta. */
-        beta = init_PTnode (alpha->max_children);
+        beta = initialize_PTnode (alpha->max_children);
         beta->N_dim = alpha->N_dim;
         beta->h_init = new_step;
         beta->h = new_step;

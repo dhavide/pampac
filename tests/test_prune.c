@@ -1,25 +1,22 @@
-#include "pampac.h"
-extern options_struct set_options (int depth, int children);
-extern PTnode* make_tree (options_struct* opts);
-extern void tree43 (PTnode* root);
+#include "test_pampac.h"
+
 
 int
 main () {
   options_struct opts = set_options (4,3);
-  opts.verbose = 5;
-  printf ("%s: opts.input_filename = %s\n", __func__, opts.input_filename);
+  debug_print (3, &opts, __func__, 
+               "opts.input_filename = %s\n", __func__, opts.input_filename);
   PTnode* root = make_tree (&opts);
-  tree43 (root);
-  assign_processes (root, 20);
+  tree43 (root, &opts);
+  opts.verbose = 5;
+  assign_processes (root, &opts, 20);
 
-  visualize_tree(root,&opts);
-//  print_tree (root);
-  prune_diverged_nodes(root, &opts);
-  visualize_tree(root,&opts);
-//  print_tree (root);
-//  print_tree (root);
-  printf ("Cleaning up...\n");
-  delete_tree (root);
+  visualize_tree (root, &opts, "After prediction");
+  prune_diverged_nodes (root, &opts);
+  visualize_tree (root, &opts, "After correction");
+
+  debug_print (0, &opts, __func__, "Cleaning up...\n");
+  delete_tree (root, &opts);
   free (opts.scale_factors);
   return 0;
 }

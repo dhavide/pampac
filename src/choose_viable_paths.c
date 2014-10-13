@@ -4,7 +4,7 @@
 /* viable or valid paths to keep (deleting others in the process).    */
 /**********************************************************************/
 void
-choose_viable_paths (PTnode *alpha) {
+choose_viable_paths (PTnode *alpha, options_struct *opts) {
   int k, best_path_index;
   double valid_path_progress, viable_path_progress;
   PTnode *beta;
@@ -18,7 +18,7 @@ choose_viable_paths (PTnode *alpha) {
     /* recursive call over child nodes */
     beta = alpha->child[k];
     if (beta!=NULL)
-      choose_viable_paths (beta);
+      choose_viable_paths (beta, opts);
   }
 
   bool has_valid_path = (alpha->valid_path_length>=0.0);
@@ -61,7 +61,7 @@ choose_viable_paths (PTnode *alpha) {
       if (beta!=NULL) {
         bool is_viable = (beta->viable_path_length>=0.0);
         if (is_viable && k!=best_path_index) {
-          delete_tree (alpha->child[k]);
+          delete_tree (alpha->child[k], opts);
           alpha->child[k] = NULL;
         }
       }

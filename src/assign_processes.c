@@ -8,7 +8,7 @@
 /* node is traversed, its pid, its label, and its depth is recorded.  */
 /**********************************************************************/
 void
-assign_processes (PTnode *root, int N_proc) {
+assign_processes (PTnode *root, options_struct *opts, int N_proc) {
   Queue q;
   PTnode *node;
   int k, label = 0, pid = 1;

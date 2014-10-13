@@ -4,9 +4,10 @@
 /* Computes normalised secant vector from two points on a curve.      */
 /**********************************************************************/
 double
-compute_secant_direction (PTnode *alpha) {
+compute_secant_direction (PTnode *alpha, options_struct* opts) {
   int k, N;
   double *z, *z_old, *delta_z, delta_z_norm;
+  debug_print (5, opts, __func__, "Computing secant direction.\n");
   N = alpha->N_dim;
   z = alpha->z;
   z_old = alpha->z_init;

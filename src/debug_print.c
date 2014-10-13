@@ -15,6 +15,7 @@ void debug_print (int thresh, options_struct *opts,
     printf ("%s: ", fname);
     va_start (args, format);
     vprintf(format, args);
+    fflush (stdout);
     va_end(args);
     return;
 }

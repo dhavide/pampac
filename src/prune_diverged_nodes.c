@@ -10,17 +10,17 @@ prune_diverged_nodes (PTnode *alpha, options_struct *opts) {
   bool all_children_NULL = true;
 
   /* Debug message prints only from root node */
-  if ((opts->verbose > 3) && (alpha->depth==0)) {
-    printf ("prune_diverged_nodes: Traversing tree to remove ");
-    printf( "FAILED nodes...\n");
-  }
+  if (alpha->depth==0)
+    debug_print (5, opts, __func__,
+                 "Traversing tree to remove FAILED nodes...\n");
+
   for (k = 0; k < alpha->max_children; k++) {
     PTnode* beta = alpha->child[k];
     if (beta != NULL) {
       all_children_NULL = false;
       bool is_beta_failed = (beta->state == FAILED);
       if (is_beta_failed) {
-        delete_tree (beta);
+        delete_tree (beta, opts);
         alpha->child[k] = NULL;
       } else
         prune_diverged_nodes (beta, opts);
@@ -40,10 +40,10 @@ prune_diverged_nodes (PTnode *alpha, options_struct *opts) {
       c_max = (c>=c_max)? c : c_max;
     }
     /* Ensure new step length generates steps that are all
-    smaller than those that failed. */
+       smaller than those that failed. */
     c_min *= (0.9 / c_max);
-    if (opts->verbose>1)
-      printf ("All children diverged; reduction factor = %g\n", c_min);
+    debug_print (2, opts, __func__,
+                 "All children diverged; reduction factor = %g\n", c_min);
     alpha->h *= c_min;
   }
   return;

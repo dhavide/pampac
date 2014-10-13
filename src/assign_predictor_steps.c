@@ -43,7 +43,7 @@ assign_predictor_steps (PTnode *root, options_struct *opts) {
               beta->z_init = alpha->z;
             if (beta->T_init==NULL)
               beta->T_init = malloc (N_dim * sizeof (double));
-            compute_secant_direction (alpha);
+            compute_secant_direction (alpha, opts);
             for (j=0; j<N_dim; j++) {
               beta->T_init[j] = alpha->T_init[j];
               beta->z[j] = beta->z_init[j] +

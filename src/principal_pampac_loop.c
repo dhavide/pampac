@@ -2,13 +2,12 @@
 #include "pampac.h"
 
 void
-principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
+principal_pampac_loop (PTnode * root, options_struct * opts, int N_p) {
   double time_init, time_final, lambda, lambda_min, lambda_max, h, h_min;
   int lambda_index, global_iter, max_global_iter;
   bool has_failed, has_completed;
 
-  if (opts->verbose>3)
-    printf ("principal_pampac_loop: Beginning main computation...\n");
+  debug_print (3, opts, __func__, "Beginning main computation...\n");
 
   /* Setting convenient aliases for optional parameters */
   lambda_min = opts->lambda_min;
@@ -18,52 +17,54 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
   h_min = opts->h_min;
   h = root->h;
   max_global_iter = opts->max_global_iter;
-  if (opts->verbose > 0) {
-    printf ("principal_pampac_loop: h=%7.1e, h_min=%7.1e\n", h, h_min);
-    printf ("principal_pampac_loop: Maximum global iterations=%d\n",
-            max_global_iter);
-  }
+  debug_print (0, opts, __func__, "h=%7.1e, h_min=%7.1e\n", h, h_min);
+  debug_print (0, opts, __func__, "Maximum global iterations=%d\n",
+               max_global_iter);
 
   global_iter = 0;
   has_failed = false;
   has_completed = (lambda <= lambda_min) || (lambda >= lambda_max);
-  if (opts->verbose > 0)
-    printf ("principal_pampac_loop: Beginning global iteration.\n");
+  debug_print (0, opts, __func__, "Beginning global iteration.\n");
 
   /* Log image of initial node if necessary */
   if (opts->verbose > 2)
-    visualize_tree (root, opts);
+    visualize_tree (root, opts, "Initialization");
 
   time_init = MPI_Wtime ();
   while (!has_completed && !has_failed) {
-    printf ("principal_pampac_loop: while iteration %i:\n", global_iter);
+
+    debug_print (5, opts, __func__, "while iteration %i:\n", global_iter);
+
     has_failed = (global_iter > max_global_iter) || (h < h_min);
+
     if (has_failed) {
-      printf ("principal_pampac_loop: Premature termination\n"); 
-      printf ("(global_iter = %i > %i = max_global_iter) or ",
-               global_iter, max_global_iter);
-      printf ("(h = %7.1e < %7.1e = h_min)\n", h, h_min);
+      debug_print (0, opts, __func__, "Premature termination\n"); 
+      debug_print (0, opts, __func__, 
+                   "(global_iter = %i > %i = max_global_iter) OR\n",
+                   global_iter, max_global_iter);
+      debug_print (0, opts, __func__,
+                   "(h = %7.1e < %7.1e = h_min)\n", h, h_min);
       break;
     }
     /* Spawn new nodes on tree at leaves if possible. */
     construct_predictor_nodes (root, opts);
-    assign_processes (root, N_p);
+    assign_processes (root, opts, N_p);
     assign_predictor_steps (root, opts);
-    visualize_tree (root, opts);
+    visualize_tree (root, opts, "After predictions");
 
     compute_corrector_steps (root, N_p);
     assess_residuals (root, opts);
-    visualize_tree (root, opts);
+    visualize_tree (root, opts, "After corrections");
 
     prune_diverged_nodes (root, opts);
-    visualize_tree (root, opts);
+    visualize_tree (root, opts, "After pruning");
 
-    construct_viable_paths (root);
-    choose_viable_paths (root);
-    visualize_tree (root, opts);
+    construct_viable_paths (root, opts);
+    choose_viable_paths (root, opts);
+    visualize_tree (root, opts, "After choosing paths");
 
     advance_root_node (&root, opts);
-    visualize_tree (root, opts);
+    visualize_tree (root, opts, "After advancing root");
 
     global_iter++;
     lambda = root->z[lambda_index];
@@ -72,14 +73,13 @@ principal_pampac_loop (int N_p, PTnode * root, options_struct * opts) {
   }
   time_final = MPI_Wtime ();
 
-  if (opts->verbose > 0) {
-    if (has_completed) {
-      printf ("principal_pampac_loop: Completed main loop\n");
-      printf ("principal_pampac_loop: %7.1e <= lambda = %7.1e <= %7.1e\n",
-              lambda_min, lambda, lambda_max); 
-    }
-    printf ("principal_pampac_loop: Time elapsed = %g\n", time_final - time_init);
-    printf ("principal_pampac_loop: global iterations = %d.\n", global_iter);
+  if (has_completed) {
+    debug_print (0, opts, __func__, "Completed main loop\n");
+    debug_print (0, opts, __func__, "%7.1e <= lambda = %7.1e <= %7.1e\n",
+                 lambda_min, lambda, lambda_max); 
   }
+  debug_print (0, opts, __func__, "Time elapsed = %g\n", time_final - time_init);
+  debug_print (0, opts, __func__, "Global iterations = %d.\n", global_iter);
+
   return;
 }

@@ -5,7 +5,7 @@
 /* CONVERGED or CONVERGING nodes) paths to the leaves of the tree.            */
 /**********************************************************************/
 void
-construct_viable_paths (PTnode *alpha) {
+construct_viable_paths (PTnode *alpha, options_struct* opts) {
   int k, valid_index = -1, viable_index = -1;
   bool is_leaf, is_valid, is_viable, is_child_valid, is_child_viable;
   double valid_path_length = 0.0, viable_path_length = 0.0, length;
@@ -42,7 +42,7 @@ construct_viable_paths (PTnode *alpha) {
     for (k=0; k<alpha->max_children; k++) {
       beta = alpha->child[k];
       if (beta!=NULL) {
-        construct_viable_paths (beta);  /* recursive call */
+        construct_viable_paths (beta, opts);  /* recursive call */
         is_child_valid = (beta->state==CONVERGED);
         is_child_viable = is_child_valid ||
                           (beta->state==CONVERGING);

@@ -59,6 +59,6 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     }
     has_converged = (r_nrm < opts->tol_residual);
   }
-  compute_secant_direction (root);
+  compute_secant_direction (root, opts);
   return true;
 }

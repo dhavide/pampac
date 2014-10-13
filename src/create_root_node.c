@@ -7,7 +7,7 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
   if (opts->verbose>3)
     printf ("create_root_node: Preparing root node of tree.\n");
 
-  root = init_PTnode (opts->max_children); /* Allocate root node */
+  root = initialize_PTnode (opts->max_children); /* Allocate root node */
   is_allocated = (root!=NULL);
   if (!is_allocated) {
     *root_addr = NULL;

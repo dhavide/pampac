@@ -1,4 +1,4 @@
-#include "pampac.h"
+#include "test_pampac.h"
 
 /* A sample tree to use for testing pampac library routines. */
 
@@ -27,16 +27,19 @@ set_options(int depth, int max_children) {
   opts.input_filename = "input.txt";
   opts.tree_base_filename = "./data/trees";
   opts.tree_filename_num = 0;
+  opts.verbose = 0;
   return (opts);
 }
 
-// int free_options (options_struct *opts) {
+void free_options (options_struct *opts) {
+  if (opts->scale_factors!=NULL)
+    free (opts->scale_factors);
+  return;
+}
 
-
-
-PTnode* make_tree(options_struct *opts) {
+PTnode* make_tree (options_struct *opts) {
   int k;
-  PTnode *root = init_PTnode (opts->max_children);
+  PTnode *root = initialize_PTnode (opts->max_children);
   root->N_dim = opts->N_dim;
   root->state = CONVERGED;
   root->h = opts->h_init;
@@ -50,18 +53,18 @@ PTnode* make_tree(options_struct *opts) {
     root->z[k] = (double)(k+2);
     root->z_init[k] = (double)(k+1);
   }
-  compute_secant_direction (root);
+  compute_secant_direction (root, opts);
   /* Generate new levels of tree (nodes only) */
   for (k=1; k<opts->max_depth; k++) {
     construct_predictor_nodes (root, opts);
-    assign_processes (root, 50);  /* Assume large number of processors */
+    assign_processes (root, opts, 50);  /* Assume large number of processors */
     assign_predictor_steps (root, opts);
   }
   return (root);
 }
 
 
-void tree43(PTnode* root) {
+void tree43(PTnode* root, options_struct *opts) {
   /* Given tree of depth 4 with 3 children per node, assigns various
      states to the nodes and prunes a few subtrees. */
   root->state = CONVERGED;
@@ -84,7 +87,7 @@ void tree43(PTnode* root) {
   root->child[0]->child[2]->nu = 3;
 
   root->child[1]->child[0]->state = FAILED;
-  delete_tree (root->child[1]->child[1]);
+  delete_tree (root->child[1]->child[1], opts);
   root->child[1]->child[1]=NULL;
   root->child[1]->child[2]->state = FAILED;
 
@@ -100,7 +103,7 @@ void tree43(PTnode* root) {
   root->child[2]->child[2]->nu = 3;
 
   root->child[0]->child[0]->child[0]->state = FAILED;
-  delete_tree (root->child[0]->child[0]->child[1]);
+  delete_tree (root->child[0]->child[0]->child[1], opts);
   root->child[0]->child[0]->child[1]=NULL;
   root->child[0]->child[0]->child[2]->state = FAILED;
 
@@ -149,7 +152,7 @@ void tree43(PTnode* root) {
 
   root->child[2]->child[1]->child[0]->state = FAILED;
   root->child[2]->child[1]->child[1]->state = CONVERGED;
-  delete_tree (root->child[2]->child[1]->child[2]);
+  delete_tree (root->child[2]->child[1]->child[2], opts);
   root->child[2]->child[1]->child[2] = NULL;
 
   root->child[0]->child[2]->child[0]->nu = 2;

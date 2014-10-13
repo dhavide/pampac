@@ -5,7 +5,7 @@
 /* dot language (compatible with the GraphViz family of graph tools). */
 /**********************************************************************/
 void
-visualize_tree (PTnode *root, options_struct *opts) {
+visualize_tree (PTnode *root, options_struct *opts, const char* title) {
   int k, n_chars;
   Queue q;
   PTnode *alpha, *beta;
@@ -33,7 +33,8 @@ visualize_tree (PTnode *root, options_struct *opts) {
   free (filename); /* Must release before test that follows... */
 
   if (out_file == NULL) {
-    printf ("visualize_tree: Warning, error opening %s.\n", filename);
+    debug_print (0, opts, __func__,
+                 "Warning, error opening %s.\n", filename);
     /* Set signal to abort future calls to visualize_tree */
     opts->tree_filename_num = -1;
     return;
@@ -84,6 +85,8 @@ visualize_tree (PTnode *root, options_struct *opts) {
       }
     }
   }
+  fprintf (out_file, "labelloc=\"t\";\n");
+  fprintf (out_file, "label=\"%s\";\n", title);
   fprintf (out_file, "}\n");
   fclose (out_file);
   opts->tree_filename_num += 1;
