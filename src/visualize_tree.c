@@ -24,7 +24,7 @@ visualize_tree (PTnode *root, options_struct *opts, const char* title) {
   n_chars = strlen (opts->tree_base_filename) + 5 + 4;
   filename = malloc (n_chars * sizeof (char));
   /* Note: n_chars accounts for 5 chars for numeric field & 4 chars
-   * for the additional characters "-" and ".gv". If the "%5d" is
+   * for the additional characters "-" and ".gv". If the "%05d" is
    * modified in the next line, n_chars should be modified also.   */
   sprintf (filename, "%s-%05d.gv",
            opts->tree_base_filename, opts->tree_filename_num);
@@ -52,8 +52,8 @@ visualize_tree (PTnode *root, options_struct *opts, const char* title) {
     dequeue (&q); /* Mark alpha as visited by dequeuing. */
 
     /* Print node information about alpha into GraphViz file. */
-    fprintf (out_file, "%d [label=\"%d\\nnu=%d \", color=",
-             alpha->label,alpha->label,alpha->nu);
+    fprintf (out_file, "%d [label=\"%d\\nnu=%d\\nPID=%d\", color=",
+             alpha->label, alpha->label, alpha->nu, alpha->pid);
     switch (alpha->state) {
     case FAILED:
       fprintf (out_file, "BLACK");
