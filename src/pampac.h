@@ -100,6 +100,7 @@ extern void debug_print (int, options_struct*, const char *fname,
 extern bool parse_options (int, char**, options_struct*);
 extern bool assign_options (char*, char*, options_struct*);
 extern void initialize_options (options_struct*);
+extern void delete_options (options_struct*);
 extern bool validate_options (options_struct*);
 
 extern bool load_initial_coordinates (PTnode*, options_struct*);

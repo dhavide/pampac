@@ -43,7 +43,7 @@ visualize_tree (PTnode *root, options_struct *opts, const char* title) {
   /* Start writing information to dot file */
   fprintf (out_file, "digraph G {\n");
   fprintf (out_file,
-           "node [shape=circle,style=filled,fontstate=black];\n");
+           "node [shape=circle,style=filled,fontcolor=black];\n");
   /* Breadth-first traversal of tree */
   init_queue (&q);
   enqueue (&q, root);

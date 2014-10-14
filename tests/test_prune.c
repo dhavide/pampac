@@ -17,6 +17,6 @@ main () {
 
   debug_print (0, &opts, __func__, "Cleaning up...\n");
   delete_tree (root, &opts);
-  free (opts.scale_factors);
+  free_options (&opts);
   return 0;
 }

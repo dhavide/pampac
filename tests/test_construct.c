@@ -28,5 +28,6 @@ main () {
   visualize_tree (root, &opts, "After");
   printf("Calling delete_tree...\n");
   delete_tree (root, &opts);
+  free_options (&opts);
   return 0;
 }

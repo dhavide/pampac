@@ -17,8 +17,8 @@ set_options(int depth, int max_children) {
   opts.h_init = 1.0e-1;
   opts.max_iter = 5;
   opts.tol_residual = 1.0e-6;
-  opts.mu = 1.3;
-  opts.gamma = 1.5;
+  opts.mu = 0.5;
+  opts.gamma = 2.0;
   opts.max_depth = depth;
   opts.max_children = max_children;
   opts.scale_factors = malloc (max_children * sizeof (double));
