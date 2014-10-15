@@ -1,18 +1,17 @@
 #include "pampac.h"
 /**********************************************************************/
 /* This function advances the root node in the event that it has only */
-/* one child node and that node has converged (i.e., is CONVERGED). This  */
-/* updating iterates to successive depths in the event that there are */
-/* several successive depths with solitary CONVERGED nodes.               */
+/* one child node and that node has converged (i.e., is CONVERGED).   */
+/* This updating iterates to successive depths in the event that      */
+/* there are several successive depths with solitary CONVERGED nodes. */
 /**********************************************************************/
 bool
-advance_root_node (PTnode ** root, options_struct * opts) {
+advance_root_node (PTnode ** root_addr, options_struct * opts) {
   int k;
   bool has_solitary_child, has_converged, has_succeeded;
-  PTnode *root_tmp = *root;
+  PTnode *root_tmp = *root_addr;
 
-  if (opts->verbose > 3)
-    printf ("advance_root_node: Advancing root node of tree...\n");
+  debug_print (3, opts, __func__, "Advancing root node of tree...\n");
 
   /*
    * The pointer root_tmp always points to the root node. The
@@ -34,27 +33,26 @@ advance_root_node (PTnode ** root, options_struct * opts) {
     /* Update root_tmp's pointers to become new root node. */
     root_tmp = root_tmp->child[k];
     /* Carefully release pointers associated with old root node. */
-    (*root)->child[k] = NULL;
-    free ((*root)->z_init);
-    (*root)->z_init = NULL;
-    free ((*root)->T_init);
-    (*root)->T_init = NULL;
-    free ((*root)->child);
-    (*root)->child = NULL;
+    (*root_addr)->child[k] = NULL;
+    free ((*root_addr)->z_init);
+    (*root_addr)->z_init = NULL;
+    free ((*root_addr)->T_init);
+    (*root_addr)->T_init = NULL;
+    free ((*root_addr)->child);
+    (*root_addr)->child = NULL;
     /*
-     * Reminder: we do not free root->z because the child's field
+     * Reminder: we do not free *root_addr->z because the child's field
      * z_init points to this memory. Also, we release memory allocated
-     * explicitly for the PTnode itself.
+     * explicitly for the PTnode *root_addr itself.
      */
-    free (*root);
-    *root = root_tmp;
-    if (opts->verbose>0)
-      printf ("Advancing root node: lambda=%10g\n",
-              (*root)->z[opts->lambda_index]);
+    free (*root_addr);
+    *root_addr = root_tmp;
+    debug_print (0, opts, __func__, "Advancing root node: lambda=%10g\n",
+                 (*root_addr)->z[opts->lambda_index]);
     /* Check whether new root node has a solitary CONVERGED child. */
     has_solitary_child = count_children (root_tmp) == 1;
     has_converged = root_tmp->state == CONVERGED;
   }
-  assign_depth (*root, 0); /* Update to reflect changes in root node. */
+  assign_depth (*root_addr, 0); /* Update to reflect changes in root node. */
   return has_succeeded;
 }

@@ -111,7 +111,7 @@ extern void assign_predictor_steps (PTnode*, options_struct*);
 extern void construct_predictor_nodes (PTnode*, options_struct*);
 extern void construct_viable_paths (PTnode*, options_struct*);
 extern void choose_viable_paths (PTnode*, options_struct*);
-extern void principal_pampac_loop (PTnode*, options_struct*, int);
+extern void principal_pampac_loop (PTnode**, options_struct*, int);
 extern bool write_root_coordinates (PTnode*, options_struct*);
 
 /* These functions deal with the PTnode data structure */
