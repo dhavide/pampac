@@ -73,16 +73,8 @@ master_process (int N_p, int argc, char *argv[]) {
                  "Terminating.\n");
     goto cleanup;
   }
-
   principal_pampac_loop (&root, &opts, N_p);
-  debug_print (0, &opts, __func__, "Completed PAMPAC loop; logging.\n");
-  if (opts.verbose>4) {
-    print_PTnode (root);
-    printf ("%s: root = %p\n", __func__, root );
-  }
   write_root_coordinates (root, &opts);
-  debug_print (0, &opts, __func__, "Completed PAMPAC loop; cleaning up.\n");
-
 
 cleanup:
   debug_print (0, &opts, __func__, "Shutting down slave processes.\n");

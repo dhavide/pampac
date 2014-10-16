@@ -1,9 +1,18 @@
 #include "KS_example.h"
 /**********************************************************************/
-void setup_globals(int N_dim) {
+bool setup_globals(int N_dim) {
   /* N_dim = number of REAL variables input */
   /* N_grid = number of collocation points  */
   int N_grid = (N_dim / 2) - 2;
+  if (N_grid == 2048)
+    Aval = -8.089150779042718; /* for N=2048 test case */
+  else if (N_grid == 1024)
+    Aval = -9.135914993072223; /* for N=1024 test case */
+  else {
+    fprintf (stderr, "%s: N_grid = %i\n", __func__, N_grid);
+    fprintf (stderr, "%s: must have N_grid = 1024 or 2048\n", __func__);
+    return false;
+  }
   /* Setting up static arrays and data structures */
   Dmatrix = malloc (N_grid * sizeof (*Dmatrix));
   Dmatrix2 = malloc (N_grid * sizeof (*Dmatrix2));
@@ -16,35 +25,48 @@ void setup_globals(int N_dim) {
   Jac_cplx = malloc (pow(N_grid+2,2) * sizeof (*Jac_cplx));
   RHS_cplx = malloc ((N_grid+2) * sizeof (*RHS_cplx));
   ipiv = malloc ((N_grid+2) * sizeof(*ipiv));
+
   /* Structures here required for complex FFT in GSL */
-    wavetable = gsl_fft_complex_wavetable_alloc (N_grid);
+  wavetable = gsl_fft_complex_wavetable_alloc (N_grid);
   workspace = gsl_fft_complex_workspace_alloc (N_grid);
-  return;
+  bool success = (Dmatrix!=NULL)   && (Dmatrix2!=NULL) &&
+                 (Dmatrix4!=NULL)  && (DX_cplx!=NULL)  &&
+                 (Jac_cplx!=NULL)  && (RHS_cplx!=NULL) &&
+                 (RHS_cplx!=NULL)  && (ipiv!=NULL) &&
+                 (wavetable!=NULL) && (workspace!=NULL);  
+  if (!success) {
+     printf ("%s: Memory allocation failure.\n", __func__);
+     teardown_globals (); /* Release memory allocated successfully */
+     return false;
+  }
+  return true;
 }
 /**********************************************************************/
-void teardown_globals() {
+void teardown_globals () {
   /* Cleaning up static arrays and data structures */
-  free (Dmatrix);
-  Dmatrix = NULL;
-  free (Dmatrix2);
-  Dmatrix2 = NULL;
-  free (Dmatrix4);
-  Dmatrix4 = NULL;
-  free (real_workspace);
-  real_workspace = NULL;
-  free (X_cplx);
-  X_cplx = NULL;
-  free (DX_cplx);
-  DX_cplx = NULL;
-  free (Jac_cplx);
-  Jac_cplx = NULL;
-  free (RHS_cplx);
-  RHS_cplx = NULL;
-  free (ipiv);
-  ipiv = NULL;
+  if (Dmatrix != NULL)
+    free (Dmatrix);
+  if (Dmatrix2 != NULL)
+    free (Dmatrix2);
+  if (Dmatrix4 != NULL)
+    free (Dmatrix4);
+  if (real_workspace!=NULL)
+    free (real_workspace);
+  if (X_cplx != NULL)
+    free (X_cplx);
+  if (DX_cplx != NULL)
+    free (DX_cplx);
+  if (Jac_cplx != NULL)
+    free (Jac_cplx);
+  if (RHS_cplx != NULL)
+    free (RHS_cplx);
+  if (ipiv != NULL)
+    free (ipiv);
   /* Data structures required for complex FFT in GSL */
-  gsl_fft_complex_wavetable_free (wavetable);
-  gsl_fft_complex_workspace_free (workspace);
+  if (wavetable!=NULL)
+    gsl_fft_complex_wavetable_free (wavetable);
+  if (workspace!=NULL)
+    gsl_fft_complex_workspace_free (workspace);
   return;
 }
 /**********************************************************************/
@@ -78,8 +100,9 @@ set_differentiation_matrices (int N_grid)
   return;
 }
 /**********************************************************************/
-void compute_Jacobian (int N_dim, complex c, complex nu, double * T) {
+bool compute_Jacobian (int N_dim, complex c, complex nu, double * T) {
   int N_grid, k, ell, index;
+  bool success;
   /* N_dim = number of REAL variables input */
   /* N_grid = number of collocation points  */
   N_grid = (N_dim / 2) - 2;
@@ -132,12 +155,16 @@ void compute_Jacobian (int N_dim, complex c, complex nu, double * T) {
 
   /* Use DFTs to compute nonlinear terms of function. */
   /* Equivalent to "X_cplx = Aval*cos(ifft(X_cplx))" in Matlab... */
-  fft_wrapper (false, N_grid, X_cplx);
+  success = fft_wrapper (false, N_grid, X_cplx);
+  if (!success)
+    return false;
   for (k=0; k<N_grid; k++)
     X_cplx[k] = Aval*ccos( X_cplx[k] );
 
   /* Equivalent to X_cplx = fft(X_cplx) in Matlab... */
-  fft_wrapper (true, N_grid, X_cplx);
+  success = fft_wrapper (true, N_grid, X_cplx);
+  if (!success)
+    return false;
 
   /* Accumulate nonlinear trigonometric derivative terms in Jacobian matrix */
   for (k=0; k<=N_grid-1; k++)
@@ -147,22 +174,38 @@ void compute_Jacobian (int N_dim, complex c, complex nu, double * T) {
   for (k=0; k<=N_grid-2; k++)
     for (ell=k+1; ell<=N_grid-1; ell++)
       Jac_cplx[k+(N_grid+2)*ell] += X_cplx[k-ell+N_grid] / N_grid;
-  return;
+  return true;
 }
 /**********************************************************************/
-void fft_wrapper (bool forward, int N, complex * Y) {
-  int k;
+bool fft_wrapper (bool forward, int N, complex * Y) {
+  int k, status;
   /* Unwrap array of complex values into array of doubles */
   for (k=0; k<N; k++) {
     real_workspace[2*k]   = creal (Y[k]);
     real_workspace[2*k+1] = cimag (Y[k]);
   }
   if (forward)
-    gsl_fft_complex_forward (real_workspace, 1, N, wavetable, workspace);
+    status = gsl_fft_complex_forward (real_workspace, 1, N, 
+                                      wavetable, workspace);
   else
-    gsl_fft_complex_inverse (real_workspace, 1, N, wavetable, workspace);
+    status = gsl_fft_complex_inverse (real_workspace, 1, N,
+                                      wavetable, workspace);
+  /* Check error status from call to GSL FFT routines */
+  if (status) {
+    if (status == GSL_EINVAL) {
+       fprintf (stderr, "%s: invalid match, N=%d\n", 
+                __func__, N);
+    } else if (status == GSL_EDOM) {
+       fprintf (stderr, "%s: invalid argument, N=%d\n", 
+                __func__, N);
+    } else {
+       fprintf (stderr, "%s: Failed, gsl_errno=%d\n", 
+                __func__, status);
+    }
+    return false;
+  }
   /* Repack computed double values into complex array */
   for (k=0; k<N; k++)
     Y[k] = real_workspace[2*k] + 1.0I*real_workspace[2*k+1];
-  return;
+  return true;
 }
