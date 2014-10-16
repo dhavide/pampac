@@ -97,7 +97,7 @@ assign_options (char *name, char* val, options_struct *opt) {
     opt->mu = atof (val);
     break;
   case OPT_MAX_DEPTH:
-    opt->max_depth = atoi (val);
+    opt->max_depth = atoi (val) + 1; /* User does not include root node in depth */
     break;
   case OPT_VERBOSE:
     opt->verbose = atoi (val);
