@@ -1,5 +1,5 @@
 #include "KS_example.h"
-void
+int
 single_corrector_step (int N_real, double *Z, double *T)
 /**********************************************************************/
 /* This function computes a single Newton corrector step for the BVP  */
@@ -50,7 +50,8 @@ single_corrector_step (int N_real, double *Z, double *T)
 /* invoking this function.                                            */
 /**********************************************************************/
 {
-  int N_grid, k, info;
+  bool is_valid;
+  int N_grid, k, status;
   complex c, nu;
   /* N_real = number of REAL variables input    */
   /* N_grid = number of collocation points used */
@@ -61,20 +62,32 @@ single_corrector_step (int N_real, double *Z, double *T)
   c = Z[N_real - 4] + 1.0I*Z[N_real-3];
   nu = Z[N_real - 2] + 1.0I*Z[N_real-1];
 
-  compute_Jacobian (N_real, c, nu, T);
-
+  is_valid = compute_Jacobian (N_real, c, nu, T);
+  if (!is_valid) {
+	fprintf (stderr, "%s: Error\n", __func__);
+	return -1;
+  }
   /* Compute the right-hand side and pack into a complex vector */
-  compute_residual ( N_real, Z, real_workspace );
+  status = compute_residual ( N_real, Z, real_workspace );
+  if (status!=0) {
+	fprintf (stderr, "%s: Error in computing residual\n", __func__);
+	fprintf (stderr, "%s: error status = %i\n", __func__, status);
+	return status;
+  }
+
   for (k=0; k<N_grid; k++)
     RHS_cplx[k] = real_workspace[2*k] + 1.0I * real_workspace[2*k+1];
   RHS_cplx[N_grid] = 0.0;
   RHS_cplx[N_grid+1] = 0.0;
 
   /* Solve linear system Jac_cplx*X=RHS_cplx; solution overwrites RHS_cplx */
-  info = clapack_zgesv( CblasColMajor, N_grid+2, 1, Jac_cplx, N_grid+2,
+  status = clapack_zgesv( CblasColMajor, N_grid+2, 1, Jac_cplx, N_grid+2,
                         ipiv, RHS_cplx, N_grid+2);
-  if (info  != 0) fprintf(stderr,"failure with error %d\n", info);
-
+  if (status!= 0) {
+	fprintf (stderr, "%s: Error in clapack_zgesv\n", __func__);
+	fprintf (stderr, "%s: error status = %i\n", __func__, status);
+	return -1;
+  }
   /* Filter out the part of the Newton update that
      gives complex-valued solutions or parameters
      due to accumulated numerical noise */
@@ -92,5 +105,5 @@ single_corrector_step (int N_real, double *Z, double *T)
     Z[2*k] -= creal(RHS_cplx[k]);
     Z[2*k+1] -= cimag(RHS_cplx[k]);
   }
-  return;
+  return 0;
 }

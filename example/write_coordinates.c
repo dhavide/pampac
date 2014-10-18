@@ -12,11 +12,13 @@
 /* and tailor outpu as they desire.                                   */
 /**********************************************************************/
 
-bool write_coordinates (int N_dim, double *z) {
-  bool has_succeeded = true; /* Writing succeeds by default */
-  int fprintf_flag;
+int write_coordinates (int N_dim, double *z) {
+  int fprintf_flag, status;
   FILE *out_file;
+  /* Note: user should customise output_filename appropriately */
   char output_filename[] = "data/output.txt";
+
+  status = 0; /* Indicates success by default */
 
   /* We choose in this instance to write the elements of z row-wise
    * into an ASCII file. Successive points computed on the curve are
@@ -28,7 +30,7 @@ bool write_coordinates (int N_dim, double *z) {
   if (out_file == NULL) {
     printf ("write_coordinates: Eror opening file '%s'.\n",
              output_filename);
-    return false;
+    return -1;
   }
 
   /* Loop that actually writes to file. Observe the use of the integer 
@@ -38,18 +40,19 @@ bool write_coordinates (int N_dim, double *z) {
     fprintf_flag = fprintf (out_file, " %4.14e", z[k]);
     if (fprintf_flag<0) {
       printf ("write_coordinates: Aborting, error during file-write\n");
-      has_succeeded = false;
+      status = fprintf_flag;
       break;
     }
   }
   /* terminate file with a newline (again verifying success). */
-  fprintf_flag = fprintf (out_file, "\n");
-  if (fprintf_flag<0) {
-    printf ("write_coordinates: Aborting, error during file-write\n");
-    has_succeeded = false;
+  if (status==0) {
+    fprintf_flag = fprintf (out_file, "\n");
+    if (fprintf_flag<0) {
+      printf ("write_coordinates: Aborting, error during file-write\n");
+      status = fprintf_flag;
+    }
   }
-
   /* Clean up and inform calling routine of success or failure. */
   fclose (out_file);
-  return has_succeeded;
+  return status;
 }

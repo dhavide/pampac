@@ -52,7 +52,12 @@ master_process (int N_p, int argc, char *argv[]) {
     int lambda_index = opts.lambda_index;
     debug_print (1, &opts, __func__,
                  "Loaded first point from file.\n");
-    compute_residual (root->N_dim, root->z, root->T_init);
+    int status = compute_residual (root->N_dim, root->z, root->T_init);
+    if (status!=0) {
+		fprintf (stderr, "%s: Error in computing residual.\n", __func__);
+		fprintf (stderr, "%s: error status = %i\n", __func__, status);
+		goto cleanup;
+	}
     res_nrm = cblas_dnrm2 (root->N_dim-1, root->T_init, 1);
     debug_print (1, &opts, __func__,
                  "Initial residual = %7.1e\n", res_nrm);

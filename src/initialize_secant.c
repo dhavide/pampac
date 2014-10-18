@@ -1,7 +1,7 @@
 #include <gsl_cblas.h>
 #include "pampac.h"
 bool initialize_secant (PTnode* root, options_struct *opts) {
-  int count, k, N_dim;
+  int count, k, N_dim, status;
   bool has_converged, has_failed;
   double *residual, r_nrm;
 
@@ -50,8 +50,18 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
       printf("initialize_secant: Aborting processes.\n");
       return false;
     }
-    single_corrector_step (N_dim, root->z_init, root->T_init);
-    compute_residual (N_dim, root->z_init, residual);
+    status = single_corrector_step (N_dim, root->z_init, root->T_init);
+    if (status!=0) {
+		fprintf (stderr, "%s: Failed corrector step, status = %i\n",
+		         __func__, status);
+	    break;
+    }
+    status = compute_residual (N_dim, root->z_init, residual);
+    if (status!=0) {
+		fprintf (stderr, "%s: Error computing residual, status = %i\n",
+		         __func__, status);
+		break;
+    }
     r_nrm = cblas_dnrm2 (N_dim-1, residual, 1);
     if (opts->verbose>1) {
       printf("initialize_secant: count=%3d,", count);
@@ -60,6 +70,9 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     has_converged = (r_nrm < opts->tol_residual);
   }
   free (residual);
-  compute_secant_direction (root, opts);
+  if (has_converged)
+    compute_secant_direction (root, opts);
+  else
+    return false;
   return true;
 }

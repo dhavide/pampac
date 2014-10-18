@@ -1,6 +1,6 @@
 #include "KS_example.h"
 /**********************************************************************/
-void
+int
 compute_residual (int N_real, const double *Z, double *Resdl)
 /**********************************************************************/
 /* This function computes a particular nonlinear function of Z and    */
@@ -55,6 +55,8 @@ compute_residual (int N_real, const double *Z, double *Resdl)
 {
   int N_grid, k;
   complex c, nu;
+  bool is_valid;
+
   /* N_real = number of REAL variables input    */
   /* N_grid = number of collocation points used */
   N_grid = (N_real / 2) - 2;
@@ -70,9 +72,17 @@ compute_residual (int N_real, const double *Z, double *Resdl)
   }
   /* Now use DFTs to compute nonlinear terms of function. */
   /* Equivalent to X_cplx = ifft(X_cplx) in Matlab... */
-  fft_wrapper (false, N_grid, X_cplx);
+  is_valid = fft_wrapper (false, N_grid, X_cplx);
+  if (!is_valid) {
+    fprintf (stderr, "%s: Error.\n", __func__);
+	return (-1);
+  }
   /* Equivalent to DX_cplx = ifft(DX_cplx) in Matlab... */
-  fft_wrapper (false, N_grid, DX_cplx);
+  is_valid = fft_wrapper (false, N_grid, DX_cplx);
+  if (!is_valid) {
+    fprintf (stderr, "%s: Error.\n", __func__);
+	return (-1);
+  }
 
   for (k = 0; k < N_grid; k++) {
     /* Equivalent to DX_cplx = ifft(DX_cplx) .* ifft(X_cplx) */
@@ -82,10 +92,17 @@ compute_residual (int N_real, const double *Z, double *Resdl)
   }
 
   /* Equivalent to X_cplx = fft(X_cplx) in Matlab */
-  fft_wrapper (true, N_grid, X_cplx);
+  is_valid = fft_wrapper (true, N_grid, X_cplx);
+  if (!is_valid) {
+	  fprintf (stderr, "%s: Error.\n", __func__);
+	  return (-1);
+  }
   /* Equivalent to DX_cplx = fft(DX_cplx) in Matlab */
-  fft_wrapper (true, N_grid, DX_cplx);
-
+  is_valid = fft_wrapper (true, N_grid, DX_cplx);
+  if (!is_valid) {
+	  fprintf (stderr, "%s: Error.\n", __func__);
+	  return (-1);
+  }
   /* Finally, accumulate nonlinear terms into residual vector & unpack
      real/imaginary components into vector Resdl of *doubles*. */
   for (k = 0; k < N_grid; k++) {
@@ -97,6 +114,6 @@ compute_residual (int N_real, const double *Z, double *Resdl)
   Resdl[N_real-4] = 0.0;
   Resdl[N_real-3] = 0.0;
   Resdl[N_real-2] = 0.0;
-  return;
+  return 0;
 }
 /******************************************************************************/

@@ -142,6 +142,6 @@ extern int empty_queue (Queue*);
 /* These two functions must be supplied by the user corresponding to  */
 /* the desired problem to solve.                                      */
 /**********************************************************************/
-extern void compute_residual (int, const double*, double*);
-extern void single_corrector_step (int, double*, double*);
-extern bool write_coordinates (int, double*);
+extern int compute_residual (int, const double*, double*);
+extern int single_corrector_step (int, double*, double*);
+extern int write_coordinates (int, double*);
