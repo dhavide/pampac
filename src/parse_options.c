@@ -8,15 +8,15 @@ bool
 parse_options (int argc, char *argv[], options_struct *opts) {
   FILE *param_file;
 
-
-  printf ("parse_options: opening parameter file for parsing.\n");
+  debug_print (4, opts, __func__, "Opening parameter file for parsing.\n");
   if (argc<2) {
-    printf("parse_options: Parameter_file required command-line input.\n");
+    debug_print (0, opts, __func__,
+                 "Parameter_file required from command-line input.\n");
     return false;
   }
   param_file = fopen (argv[1], "r");
   if (param_file == NULL) {
-    printf ("parse_options: Error Opening File.\n");
+    debug_print (0, opts, __func__, "Error Opening File.\n");
     return false;
   }
 
@@ -37,7 +37,7 @@ parse_options (int argc, char *argv[], options_struct *opts) {
     free (value);
     value = NULL;
     if (!has_parsed) {
-      printf("parse_options: Invalid option parsed.\n");
+      debug_print (0, opts, __func__, "Invalid option parsed.\n");
       fclose (param_file);
       return false;
     }
@@ -54,5 +54,3 @@ parse_options (int argc, char *argv[], options_struct *opts) {
   bool has_succeeded = validate_options (opts);
   return has_succeeded;
 }
-
-

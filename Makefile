@@ -4,13 +4,14 @@
 
 TOPLEVEL = .
 include ${TOPLEVEL}/Make.config  # Parse for generic macros
-
 ################################################################################
 # Targets
 ################################################################################
+.PHONY: all lib example clean remake
+
 all:
 	${MAKE} lib
-#${MAKE} example
+	${MAKE} example
 
 lib:
 	cd src; ${MAKE} lib

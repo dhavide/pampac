@@ -92,7 +92,7 @@ typedef struct Queue {
 /**********************************************************************/
 /* Function prototypes                                                */
 /**********************************************************************/
-extern void master_process (int, int, char**);
+extern void master_process (int, options_struct*);
 extern void slave_process (int);
 
 extern void debug_print (int, options_struct*, const char *fname,
