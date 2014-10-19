@@ -4,9 +4,6 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
   int N_dim = opts->N_dim;
   bool is_allocated;
 
-  if (opts->verbose>3)
-    printf ("create_root_node: Preparing root node of tree.\n");
-
   root = initialize_PTnode (opts->max_children); /* Allocate root node */
   is_allocated = (root!=NULL);
   if (!is_allocated) {
@@ -14,8 +11,6 @@ bool create_root_node (PTnode** root_addr, options_struct *opts) {
     return false;
   }
   /* Fill in fields of root node appropriately from options */
-  if (opts->verbose>0)
-    printf("create_root_node: Setting fields of root node\n");
   root->N_dim = N_dim;
   root->depth = 0;
   root->state = CONVERGED;

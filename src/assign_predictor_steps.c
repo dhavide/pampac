@@ -11,11 +11,6 @@ assign_predictor_steps (PTnode *root, options_struct *opts) {
   bool is_leaf, has_done_work, has_pid;
   int j, k, N_dim;
 
-  if (opts->verbose > 3) {
-    printf ("assign_predictor_steps: Copying predictor ");
-    printf ("data to predictor nodes...\n");
-  }
-
   N_dim = root->N_dim;
   /* Breadth-first traversal of tree */
   init_queue (&q);

@@ -14,10 +14,9 @@ assess_residuals (PTnode * node, options_struct * opts) {
   MPI_Status status;
 
   /* Debug message prints only from root node */
-  if ((opts->verbose > 3) && (node->depth==0)) {
-    printf ("assess_residuals: Traversing tree to assess ");
-    printf( "state of each node...\n");
-  }
+  if (node->depth==0)
+    debug_print (3, opts, __func__, 
+                 "Traversing tree to assess state of each node...\n");
 
   TOL = opts->tol_residual;
   GAMMA = opts->gamma;
@@ -61,15 +60,13 @@ assess_residuals (PTnode * node, options_struct * opts) {
     node->state = CONVERGED;
   else if (has_failed)
     node->state = FAILED;
-  else if (has_almost_converged)
+  else if (has_almost_converged) {
     node->state = CONVERGING;
-  if (opts->verbose>0) {
-    printf ("assess_residuals: Residual=");
-    printf ("%7.1e/%-7.1e, nu=%d, h=%7.1e, state=",
-            residual_old, node->res_norm, node->nu, node->h);
+    debug_print (0, opts, __func__,
+               "Residual=%7.1e/%-7.1e, nu=%d, h=%7.1e, state=",
+               residual_old, node->res_norm, node->nu, node->h);
     print_state (node, stdout);
     printf("\n");
   }
   return;
 }
-

@@ -5,10 +5,8 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
   bool has_converged, has_failed;
   double *residual, r_nrm;
 
-  if (opts->verbose>3) {
-    printf ("initialize_secant: Computing second point on curve ");
-    printf ("to get secant direction.\n");
-  }
+  debug_print (1, opts, __func__,
+               "Computing secant direction using 2nd point.\n");
 
   /* Assume that node root has been initialized with a vector
    * root->z somehow. This function determines a nearby point on
@@ -30,10 +28,9 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     root->T_init[k] = 0.e0;
   root->T_init[opts->lambda_index] = 1.0;
 
-  if (opts->verbose>0) {
-    printf("initialize_secant: Iteration to get initial");
-    printf(" secant direction.\n");
-  }
+  debug_print (1, opts, __func__,
+               "Iteration to get initial secant direction.\n");
+
   count = 0;
   has_converged = false;
   has_failed = false;
@@ -41,38 +38,43 @@ bool initialize_secant (PTnode* root, options_struct *opts) {
     count++;
     has_failed = (count > opts->max_iter);
     if (has_failed) {
-      printf("initialize_secant: Failed to determine initial secant");
-      printf(" direction.\n");
-      printf("initialize_secant: Maximum of %d corrector iterations attained.\n",
-             opts->max_iter);
-      printf("initialize_secant: Residual norm: %7.1e\n", opts->tol_residual);
-      printf("initialize_secant: Desired residual norm: %7.1e\n", opts->tol_residual);
-      printf("initialize_secant: Aborting processes.\n");
+      debug_print (0, opts, __func__,
+                   "Failed to determine initial secant direction.\n");
+      debug_print (0, opts, __func__,
+                   "Maximum of %d corrector iterations attained.\n",
+                   opts->max_iter);
+      debug_print (0, opts, __func__,
+                   "Residual norm: %7.1e\n", opts->tol_residual);
+      debug_print (0, opts, __func__,
+                   "Desired residual norm: %7.1e\n",
+                   opts->tol_residual);
+      debug_print (0, opts, __func__, "Aborting processes.\n");
       return false;
     }
     status = single_corrector_step (N_dim, root->z_init, root->T_init);
     if (status!=0) {
-		fprintf (stderr, "%s: Failed corrector step, status = %i\n",
-		         __func__, status);
-	    break;
+      fprintf (stderr, "%s: Failed corrector step, status = %i\n",
+               __func__, status);
+      break;
     }
     status = compute_residual (N_dim, root->z_init, residual);
     if (status!=0) {
-		fprintf (stderr, "%s: Error computing residual, status = %i\n",
-		         __func__, status);
-		break;
+      fprintf (stderr, "%s: Error computing residual, status = %i\n",
+               __func__, status);
+      break;
     }
     r_nrm = cblas_dnrm2 (N_dim-1, residual, 1);
-    if (opts->verbose>1) {
-      printf("initialize_secant: count=%3d,", count);
-      printf(" residual norm=%7.1e.\n", r_nrm);
-    }
+    debug_print (1, opts, __func__,
+                 " count=%3d, residual norm=%7.1e.\n", count, r_nrm);
     has_converged = (r_nrm < opts->tol_residual);
   }
   free (residual);
   if (has_converged)
     compute_secant_direction (root, opts);
-  else
+  else {
+    debug_print (0, opts, __func__,
+                 "Failed to determine initial secant direction\n");
     return false;
+  }
   return true;
 }

@@ -10,7 +10,6 @@
 bool validate_options (options_struct *opts) {
   bool is_valid = true;
 
-  printf ("validate_options: Checking options from parameter file.\n");
   if (opts->N_dim<=0) {
     printf ("validate_options: N_DIM must be positive ");
     printf ("(N_DIM = %d)\n", opts->N_dim);

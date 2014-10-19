@@ -9,12 +9,11 @@ load_initial_coordinates (PTnode* node, options_struct* opts) {
   double *z = node->z;
   FILE *input_file;
 
-  if (opts->verbose>3)
-    printf ("load_coordinates: Reading user data into root node.\n");
+  debug_print (3, opts, __func__, "Reading 1st point to root node.\n");
 
   input_file = fopen (filename, "r");
   if (input_file == NULL) {
-    printf ("load_initial_coordinates: Error Opening File.\n");
+    debug_print (0, opts, __func__, "Error Opening File.\n");
     return (false);
   }
   /* Actually parse the input file. */

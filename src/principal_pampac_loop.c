@@ -28,8 +28,7 @@ principal_pampac_loop (PTnode ** root_addr, options_struct * opts, int N_p) {
   debug_print (0, opts, __func__, "Beginning global iteration.\n");
 
   /* Log image of initial node if necessary */
-  if (opts->verbose > 2)
-    visualize_tree (root, opts, "Initialization");
+  visualize_tree (root, opts, "Initialization");
 
   time_init = MPI_Wtime ();
   while (!has_completed && !has_failed) {
@@ -86,9 +85,5 @@ principal_pampac_loop (PTnode ** root_addr, options_struct * opts, int N_p) {
   }
   debug_print (0, opts, __func__, "Time elapsed = %g\n", time_final - time_init);
   debug_print (0, opts, __func__, "Global iterations = %d.\n", global_iter);
-  if (opts->verbose>4) {
-    print_PTnode (*root_addr);
-    printf ("%s: root = %p\n", __func__, root );
-  }
   return;
 }
